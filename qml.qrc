@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>WeatherInfo.qml</file>
+        <file>MainPage.qml</file>
+        <file>TasksListView.qml</file>
+        <file>TasksListDelegate.qml</file>
+        <file>Task.qml</file>
+        <file>DateTimeComboBoxs.qml</file>
+        <file>CitySelector.qml</file>
+    </qresource>
+</RCC>
