@@ -17,6 +17,7 @@ ComboBox {
         "Chicago, USA",
         "Houston, USA",
         "Florida, USA",
+        "Seattle, USA",
         "New York, USA",
         "Hawaii, USA",
         "Michigan, USA",
@@ -37,7 +38,7 @@ ComboBox {
         "Nha Trang, Vietnam"
     ]
 
-    currentIndex: 17 // Texas, USA
+    currentIndex: 18 // Texas, USA
 
     onCurrentIndexChanged: {
         weather.reloadWeatherFromLocation(model[currentIndex])
