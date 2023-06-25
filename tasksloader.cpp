@@ -19,7 +19,7 @@ QList<QString> TasksLoader::getSuitableTasksWithWeather()
         tasksToDo.append("Bring your umbrella");
         tasksToDo.append("Bring your raincoat");
     }
-    if (temperature <= 20)
+    if (temperature <= 25)
         tasksToDo.append("Wear your sweater");
 
     return tasksToDo;
