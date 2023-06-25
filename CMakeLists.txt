@@ -23,6 +23,7 @@ include_directories(${CURL_INCLUDE_DIR})
 
 set(PROJECT_SOURCES
         main.cpp
+        weaminder.h weaminder.cpp
         weather.h weather.cpp
         tasksloader.h tasksloader.cpp
         datetime.h datetime.cpp

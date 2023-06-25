@@ -62,4 +62,8 @@ Item {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
     }
+
+    EasterEgg {
+        anchors.fill: parent
+    }
 }

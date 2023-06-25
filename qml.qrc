@@ -8,5 +8,6 @@
         <file>Task.qml</file>
         <file>DateTimeComboBoxs.qml</file>
         <file>CitySelector.qml</file>
+        <file>EasterEgg.qml</file>
     </qresource>
 </RCC>
