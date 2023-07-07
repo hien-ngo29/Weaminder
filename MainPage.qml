@@ -3,9 +3,20 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import com.mycompany.weather 1.0
+import com.mycompany.datetime 1.0
 import com.mycompany.task 1.0
+import com.mycompany.weaminder 1.0
 
 Item {
+
+    Weaminder {
+        id: weaminder
+    }
+
+    DateTime {
+        id: dateTime
+    }
+
     Weather {
         id: weather
     }
@@ -15,10 +26,20 @@ Item {
         currentWeather: weather
     }
 
+    WeatherTimeSelector {
+        id: weatherTimeSelector
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: parent.horizontalCenter + 20
+
+        anchors.margins: 8
+    }
+
     CitySelector {
         id: citySelector
 
-        anchors.right: parent.right
+        anchors.right: weatherTimeSelector.left
         anchors.left: parent.left
         anchors.top: parent.top
 
