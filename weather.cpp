@@ -139,7 +139,6 @@ void Weather::reformatStatusText()
     {
         if (status()[i] == " ") {
             resultStringStatus[i+1] = resultStringStatus[i+1].toUpper();
-            qDebug() << resultStringStatus[i+1];
         }
     }
     setStatus(resultStringStatus);
