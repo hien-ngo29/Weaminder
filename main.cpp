@@ -7,9 +7,11 @@
 #include "weather.h"
 #include "datetime.h"
 #include "tasksloader.h"
+#include "weaminder.h"
 
 int main(int argc, char *argv[])
 {
+    qmlRegisterType<TasksLoader>("com.mycompany.weaminder", 1, 0, "Weaminder");
     qmlRegisterType<Weather>("com.mycompany.weather", 1, 0, "Weather");
     qmlRegisterType<DateTime>("com.mycompany.datetime", 1, 0, "DateTime");
     qmlRegisterType<TasksLoader>("com.mycompany.task", 1, 0, "TasksLoader");
