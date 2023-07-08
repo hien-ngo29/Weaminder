@@ -11,8 +11,6 @@ class Weaminder : public QObject
 public:
     explicit Weaminder(QObject *parent = nullptr);
 
-    Q_INVOKABLE QList<QString> getFollowingHours();
-
 signals:
 
 };

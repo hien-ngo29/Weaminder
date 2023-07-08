@@ -16,6 +16,8 @@ public:
 
     Q_INVOKABLE QString getCurrentTime();
 
+    Q_INVOKABLE QList<QString> getFollowingHours();
+
 signals:
 
 private:
