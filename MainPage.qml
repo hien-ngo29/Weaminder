@@ -8,7 +8,6 @@ import com.mycompany.task 1.0
 import com.mycompany.weaminder 1.0
 
 Item {
-
     Weaminder {
         id: weaminder
     }
@@ -55,7 +54,7 @@ Item {
         anchors.top: citySelector.bottom
 
         weatherStatus: weather.status
-        weatherStatusIconPath: weather.statusIconPath
+        weatherStatusIconPath: weather.statusIconUrl
         temperature: weather.temperature
         humidity: weather.humidity
         windSpeed: weather.windSpeed

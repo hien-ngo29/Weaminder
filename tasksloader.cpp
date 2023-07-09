@@ -11,11 +11,11 @@ QList<QString> TasksLoader::getSuitableTasksWithWeather()
     QList<QString> tasksToDo;
 
     double temperature = currentWeather()->temperature();
-    QString weatherStatusIcon = currentWeather()->statusIconPath();
+    QString weatherStatus = currentWeather()->status();
 
     if (temperature >= 30)
         tasksToDo.append("Bring your fan");
-    if (weatherStatusIcon == "icons/rainy.png") {
+    if (weatherStatus.contains("rain")) {
         tasksToDo.append("Bring your umbrella");
         tasksToDo.append("Bring your raincoat");
     }

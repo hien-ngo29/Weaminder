@@ -92,15 +92,16 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
     double windSpeedms = jsonObject["wind"].toObject()["speed"].toDouble();
     double windSpeedkmh = roundTo1Decimal(windSpeedms * 3.5);
     double airPressure = jsonObject["main"].toObject()["pressure"].toDouble();
+    QString weatherIconName = jsonObject["weather"].toArray()[0].toObject()["icon"].toString();
 
     setStatus(weatherDescription);
     setAirPressure(airPressure);
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
     setHumidity(humidity);
+    setStatusIconName(weatherIconName);
 
     reformatStatusText();
-    getSuitableIconFromStatus();
 }
 
 void Weather::reformatStatusText()
@@ -124,22 +125,22 @@ void Weather::getSuitableIconFromStatus()
     QString loweredStatusString = status().toLower();
 
     if (loweredStatusString == "clear sky") {
-        setStatusIconPath("sunny");
+        setStatusIconName("sunny");
     }
 
     if (loweredStatusString.contains("rain")) // light or heavy rain
-        setStatusIconPath("rainy");
+        setStatusIconName("rainy");
 
     else if (loweredStatusString == "broken clouds" ||
              loweredStatusString == "few clouds" ||
              loweredStatusString == "scattered clouds")
-        setStatusIconPath("few-clouds");
+        setStatusIconName("few-clouds");
 
     else if (loweredStatusString.contains("snow"))
-        setStatusIconPath("snowy");
+        setStatusIconName("snowy");
 
     else if (loweredStatusString.contains("clouds"))
-        setStatusIconPath("cloudy");
+        setStatusIconName("cloudy");
 }
 
 const QString &Weather::status() const
@@ -233,17 +234,17 @@ void Weather::setLocation(const QString &newLocation)
     emit locationChanged();
 }
 
-const QString &Weather::statusIconPath() const
+const QString &Weather::statusIconUrl() const
 {
-    return m_statusIconPath;
+    return m_statusIconUrl;
 }
 
-void Weather::setStatusIconPath(const QString &newStatusIconPath)
+void Weather::setStatusIconName(const QString &newStatusIconName)
 {
-    if (m_statusIconPath == newStatusIconPath)
+    if (m_statusIconUrl == newStatusIconName)
         return;
-    m_statusIconPath = "icons/" + newStatusIconPath + ".png";
-    emit statusIconPathChanged();
+    m_statusIconUrl = "https://openweathermap.org/img/wn/" + newStatusIconName + "@4x.png";
+    emit statusIconNameChanged();
 }
 
 DateTime *Weather::dateTime() const

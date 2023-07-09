@@ -15,8 +15,10 @@ Column {
 
     Image {
         id: weatherStatusIcon
+        width: 100; height: 100
         anchors.horizontalCenter: parent.horizontalCenter
         source: weatherStatusIconPath
+        scale: 1.8
     }
 
     Label {

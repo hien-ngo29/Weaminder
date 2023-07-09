@@ -34,7 +34,7 @@ class Weather : public QObject
     Q_PROPERTY(int uvIndex READ uvIndex WRITE setUvIndex NOTIFY uvIndexChanged)
     Q_PROPERTY(int airPressure READ airPressure WRITE setAirPressure NOTIFY airPressureChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
-    Q_PROPERTY(QString statusIconPath READ statusIconPath WRITE setStatusIconPath NOTIFY statusIconPathChanged)
+    Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconName NOTIFY statusIconNameChanged)
     Q_PROPERTY(DateTime *dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged)
     QML_ELEMENT
 
@@ -75,8 +75,8 @@ public:
     const QString &location() const;
     void setLocation(const QString &newLocation);
 
-    const QString &statusIconPath() const;
-    void setStatusIconPath(const QString &newStatusIconPath);
+    const QString &statusIconUrl() const;
+    void setStatusIconName(const QString &newStatusIconName);
 
     DateTime *dateTime() const;
     void setDateTime(DateTime *newDateTime);
@@ -97,7 +97,7 @@ signals:
 
     void locationChanged();
 
-    void statusIconPathChanged();
+    void statusIconNameChanged();
 
     void dateTimeChanged();
 
@@ -109,7 +109,7 @@ private:
     int m_uvIndex;
     int m_airPressure;
 
-    QString m_statusIconPath;
+    QString m_statusIconUrl;
 
     QString m_location;
 
