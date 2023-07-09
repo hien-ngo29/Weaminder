@@ -5,6 +5,16 @@
 #include <QString>
 #include <QDebug>
 
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
+#include <QEventLoop>
+
 #include <qqml.h>
 
 #include <iostream>
@@ -12,8 +22,7 @@
 #include <string>
 #include <math.h>
 
-#include <curl/curl.h>
-#include <jsoncpp/json/json.h>
+#include "datetime.h"
 
 class Weather : public QObject
 {
@@ -26,6 +35,7 @@ class Weather : public QObject
     Q_PROPERTY(int airPressure READ airPressure WRITE setAirPressure NOTIFY airPressureChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
     Q_PROPERTY(QString statusIconPath READ statusIconPath WRITE setStatusIconPath NOTIFY statusIconPathChanged)
+    Q_PROPERTY(DateTime *dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged)
     QML_ELEMENT
 
 public:
@@ -39,11 +49,10 @@ public:
 
     double roundTo1Decimal(double number);
 
-    void setWeatherProperties();
+    void setWeatherProperties(QNetworkReply* reply);
+
     void reformatStatusText();
     void getSuitableIconFromStatus();
-
-    static size_t WriteCallbackAPI(void* contents, size_t size, size_t nmemb, std::string* data);
 
     const QString &status() const;
     void setStatus(const QString &newStatus);
@@ -69,6 +78,9 @@ public:
     const QString &statusIconPath() const;
     void setStatusIconPath(const QString &newStatusIconPath);
 
+    DateTime *dateTime() const;
+    void setDateTime(DateTime *newDateTime);
+
 signals:
 
     void statusChanged();
@@ -87,6 +99,8 @@ signals:
 
     void statusIconPathChanged();
 
+    void dateTimeChanged();
+
 private:
     QString m_status; // The description about the weather
     double m_temperature;
@@ -99,8 +113,13 @@ private:
 
     QString m_location;
 
+    DateTime* m_dateTime;
+
+    QNetworkAccessManager* m_networkManager;
+    QNetworkRequest m_networkRequest;
+
     const std::string apiKey = "9ae7907c3148b138968051b92b60f5e0";
-    std::string url;
+    std::string m_apiURL;
 };
 
 #endif // WEATHER_H

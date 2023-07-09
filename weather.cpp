@@ -3,7 +3,25 @@
 Weather::Weather(QObject *parent)
     : QObject{parent}
 {
+    m_networkManager = new QNetworkAccessManager();
+
     reloadWeatherFromLocation("Texas");
+
+    m_networkRequest.setUrl(QUrl(QString::fromUtf8(m_apiURL.c_str())));
+    m_networkManager->get(m_networkRequest);
+
+    QObject::connect(m_networkManager, &QNetworkAccessManager::finished,
+    this, [=](QNetworkReply *reply) {
+        if (reply->error() == QNetworkReply::NoError) {
+            setWeatherProperties(reply);
+        }
+
+        else {
+            qDebug() << reply->errorString();
+            return;
+        }
+    }
+    );
 }
 
 QString Weather::reformatCityToUrlCity(QString city)
@@ -32,9 +50,11 @@ void Weather::reloadWeatherFromLocation(QString city)
     city = reformatCityToUrlCity(city);
 
     setLocation(city);
-    url = ("http://api.openweathermap.org/data/2.5/weather?q="
+    m_apiURL = ("http://api.openweathermap.org/data/2.5/weather?q="
            + location().toStdString() + "&appid=" + apiKey);
-    setWeatherProperties();
+
+    m_networkRequest.setUrl(QUrl(QString::fromUtf8(m_apiURL.c_str())));
+    m_networkManager->get(m_networkRequest);
 }
 
 double Weather::kelvin2Celsius(double kevinTemperature)
@@ -46,19 +66,11 @@ double Weather::roundTo1Decimal(double number)
 {
     double resultNum = floor(number * 10.0) / 10.0;
 
-    std::ostringstream strs;
-    strs << resultNum;
-    std::string resultString = strs.str();
-
-    char decimalToCheck;
-    for (int i = 0; i < resultString.length(); i++) {
-        if (resultString[i] == '.') {
-            decimalToCheck = resultString[i+1];
-            break;
-        }
-    }
-
-    qDebug() << decimalToCheck;
+    QString decimalToCheck = QString::number(resultNum);
+    if (decimalToCheck.contains("."))
+        decimalToCheck = decimalToCheck.split(".")[1];
+    else
+        return resultNum;
 
     if (decimalToCheck == '6' || decimalToCheck == '1')
         resultNum -= 0.1;
@@ -68,64 +80,27 @@ double Weather::roundTo1Decimal(double number)
     return resultNum;
 }
 
-void Weather::setWeatherProperties()
+void Weather::setWeatherProperties(QNetworkReply *reply)
 {
-    CURL* curl = curl_easy_init();
-    if (curl)
-    {
-        // Set the URL
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    QByteArray response = reply->readAll();
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(response);
+    QJsonObject jsonObject = jsonResponse.object();
 
-        // Set the callback function to handle the response
-        std::string response;
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackAPI);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    double temperature = roundTo1Decimal(kelvin2Celsius(jsonObject["main"].toObject()["temp"].toDouble()));
+    int humidity = jsonObject["main"].toObject()["humidity"].toInt();
+    QString weatherDescription = jsonObject["weather"].toArray()[0].toObject()["description"].toString();
+    double windSpeedms = jsonObject["wind"].toObject()["speed"].toDouble();
+    double windSpeedkmh = roundTo1Decimal(windSpeedms * 3.5);
+    double airPressure = jsonObject["main"].toObject()["pressure"].toDouble();
 
-        // Perform the request
-        CURLcode result = curl_easy_perform(curl);
+    setStatus(weatherDescription);
+    setAirPressure(airPressure);
+    setWindSpeed(windSpeedkmh);
+    setTemperature(temperature);
+    setHumidity(humidity);
 
-        // Check for errors
-        if (result != CURLE_OK)
-        {
-            qDebug() << "Request failed: " << curl_easy_strerror(result);
-            curl_easy_cleanup(curl);
-        }
-
-        // Parse the response as JSON
-        Json::Value root;
-        Json::CharReaderBuilder reader;
-        std::istringstream iss(response);
-        std::string parseErrors;
-        if (!Json::parseFromStream(reader, iss, &root, &parseErrors))
-        {
-            qDebug() << "Failed to parse JSON: ";
-            curl_easy_cleanup(curl);
-        }
-
-        // Extract and display weather information
-        double temperatureKelvin = root["main"]["temp"].asDouble();
-        double temperatureCelsius = roundTo1Decimal(kelvin2Celsius(temperatureKelvin));
-        double humidityLevel = roundTo1Decimal(root["main"]["humidity"].asDouble());
-        double uvIndexLevel = roundTo1Decimal(root["uv_index"].asDouble());
-        double windSpeedms = root["wind"]["speed"].asDouble();
-        double windSpeedkmh = roundTo1Decimal(windSpeedms * 3.6);
-        double airPressureLevel = root["main"]["pressure"].asFloat();
-        std::string weatherDescription = root["weather"][0]["description"].asString();
-        QString weatherDescriptionQStr = QString::fromUtf8(weatherDescription.c_str());
-
-        setStatus(weatherDescriptionQStr);
-        setAirPressure(airPressureLevel);
-        setWindSpeed(windSpeedkmh);
-        setTemperature(temperatureCelsius);
-        setHumidity(humidityLevel);
-        setUvIndex(uvIndexLevel);
-
-        reformatStatusText();
-        getSuitableIconFromStatus();
-
-        // Clean up
-        curl_easy_cleanup(curl);
-    }
+    reformatStatusText();
+    getSuitableIconFromStatus();
 }
 
 void Weather::reformatStatusText()
@@ -165,14 +140,6 @@ void Weather::getSuitableIconFromStatus()
 
     else if (loweredStatusString.contains("clouds"))
         setStatusIconPath("cloudy");
-}
-
-size_t Weather::WriteCallbackAPI(void *contents, size_t size,
-                                 size_t nmemb, std::string *data)
-{
-    size_t totalSize = size * nmemb;
-    data->append(static_cast<char*>(contents), totalSize);
-    return totalSize;
 }
 
 const QString &Weather::status() const
@@ -277,4 +244,17 @@ void Weather::setStatusIconPath(const QString &newStatusIconPath)
         return;
     m_statusIconPath = "icons/" + newStatusIconPath + ".png";
     emit statusIconPathChanged();
+}
+
+DateTime *Weather::dateTime() const
+{
+    return m_dateTime;
+}
+
+void Weather::setDateTime(DateTime *newDateTime)
+{
+    if (m_dateTime == newDateTime)
+        return;
+    m_dateTime = newDateTime;
+    emit dateTimeChanged();
 }
