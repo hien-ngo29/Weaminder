@@ -8,18 +8,11 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set (CMAKE_CXX_FLAGS "-lcurl -ljsoncpp -lrt -lpthread")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#find_package(CURL REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(JSONCPP jsoncpp)
-find_package(CURL REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Quick)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Quick)
-
-include_directories(${CURL_INCLUDE_DIR})
 
 set(PROJECT_SOURCES
         main.cpp
@@ -59,9 +52,6 @@ target_compile_definitions(Weaminder
 target_link_libraries(Weaminder
     PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick
 )
-
-target_link_libraries(Weaminder PRIVATE ${CURL_LIBRARIES})
-target_link_libraries(Weaminder PRIVATE jsoncpp)
 
 set_target_properties(Weaminder PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
