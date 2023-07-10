@@ -10,32 +10,16 @@ QList<QString> TasksLoader::getSuitableTasksWithWeather()
 {
     QList<QString> tasksToDo;
 
-    double temperature = currentWeather()->temperature();
-    QString weatherStatus = currentWeather()->status();
-
-    if (temperature >= 30)
+    if (temperature() >= 30)
         tasksToDo.append("Bring your fan");
-    if (weatherStatus.contains("rain")) {
+    if (weatherStatus().contains("rain")) {
         tasksToDo.append("Bring your umbrella");
         tasksToDo.append("Bring your raincoat");
     }
-    if (temperature <= 25)
+    if (temperature() <= 25)
         tasksToDo.append("Wear your sweater");
 
     return tasksToDo;
-}
-
-Weather *TasksLoader::currentWeather() const
-{
-    return m_currentWeather;
-}
-
-void TasksLoader::setCurrentWeather(Weather *newCurrentWeather)
-{
-    if (m_currentWeather == newCurrentWeather)
-        return;
-    m_currentWeather = newCurrentWeather;
-    emit currentWeatherChanged();
 }
 
 QList<QString> TasksLoader::tasksList() const
@@ -49,5 +33,31 @@ void TasksLoader::setTasksList(QList<QString> newTasksList)
         return;
     m_tasksList = newTasksList;
     emit tasksListChanged();
+}
+
+int TasksLoader::temperature() const
+{
+    return m_temperature;
+}
+
+void TasksLoader::setTemperature(int newTemperature)
+{
+    if (m_temperature == newTemperature)
+        return;
+    m_temperature = newTemperature;
+    emit temperatureChanged();
+}
+
+QString TasksLoader::weatherStatus() const
+{
+    return m_weatherStatus;
+}
+
+void TasksLoader::setWeatherStatus(const QString &newWeatherStatus)
+{
+    if (m_weatherStatus == newWeatherStatus)
+        return;
+    m_weatherStatus = newWeatherStatus;
+    emit weatherStatusChanged();
 }
 

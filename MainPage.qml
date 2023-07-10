@@ -16,13 +16,15 @@ Item {
         id: dateTime
     }
 
-    Weather {
-        id: weather
-    }
-
     TasksLoader {
         id: tasksLoader
-        currentWeather: weather
+
+        onTemperatureChanged: taskListView.reloadTasks()
+    }
+
+    Weather {
+        id: weather
+        tasksLoader: tasksLoader
     }
 
     WeatherTimeSelector {

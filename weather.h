@@ -23,6 +23,7 @@
 #include <math.h>
 
 #include "datetime.h"
+#include "tasksloader.h"
 
 class Weather : public QObject
 {
@@ -36,6 +37,7 @@ class Weather : public QObject
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
     Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconName NOTIFY statusIconNameChanged)
     Q_PROPERTY(DateTime *dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged)
+    Q_PROPERTY(TasksLoader *tasksLoader READ tasksLoader WRITE setTasksLoader NOTIFY tasksLoaderChanged)
     QML_ELEMENT
 
 public:
@@ -81,6 +83,9 @@ public:
     DateTime *dateTime() const;
     void setDateTime(DateTime *newDateTime);
 
+    TasksLoader *tasksLoader() const;
+    void setTasksLoader(TasksLoader *newTasksLoader);
+
 signals:
 
     void statusChanged();
@@ -101,7 +106,11 @@ signals:
 
     void dateTimeChanged();
 
+    void tasksLoaderChanged();
+
 private:
+    TasksLoader* m_tasksLoader;
+
     QString m_status; // The description about the weather
     double m_temperature;
     double m_humidity;

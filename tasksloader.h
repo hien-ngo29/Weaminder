@@ -8,13 +8,12 @@
 #include <iostream>
 #include <map>
 
-#include "weather.h"
-
 class TasksLoader : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Weather *currentWeather READ currentWeather WRITE setCurrentWeather NOTIFY currentWeatherChanged)
     Q_PROPERTY(QList<QString> tasksList READ tasksList WRITE setTasksList NOTIFY tasksListChanged)
+    Q_PROPERTY(int temperature READ temperature WRITE setTemperature NOTIFY temperatureChanged)
+    Q_PROPERTY(QString weatherStatus READ weatherStatus WRITE setWeatherStatus NOTIFY weatherStatusChanged)
     QML_ELEMENT
 
 public:
@@ -25,21 +24,28 @@ public:
     Q_INVOKABLE QList<QString> getSuitableTasksWithWeather();
     void addTaskToTasksList(QString taskName);
 
-    Weather *currentWeather() const;
-    void setCurrentWeather(Weather *newCurrentWeather);
-
     QList<QString> tasksList() const;
     void setTasksList(QList<QString> newTasksList);
 
+    int temperature() const;
+    void setTemperature(int newTemperature);
+
+    QString weatherStatus() const;
+    void setWeatherStatus(const QString &newWeatherStatus);
+
 signals:
-    void currentWeatherChanged();
 
     void tasksListChanged();
 
-private:
-    Weather* m_currentWeather;
+    void temperatureChanged();
 
+    void weatherStatusChanged();
+
+private:
     QList<QString> m_tasksList;
+
+    int m_temperature;
+    QString m_weatherStatus;
 };
 
 #endif // TASKSLOADER_H

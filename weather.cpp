@@ -7,9 +7,6 @@ Weather::Weather(QObject *parent)
 
     reloadWeatherFromLocation("Texas");
 
-    m_networkRequest.setUrl(QUrl(QString::fromUtf8(m_apiURL.c_str())));
-    m_networkManager->get(m_networkRequest);
-
     QObject::connect(m_networkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
@@ -20,8 +17,7 @@ Weather::Weather(QObject *parent)
             qDebug() << reply->errorString();
             return;
         }
-    }
-    );
+    });
 }
 
 QString Weather::reformatCityToUrlCity(QString city)
@@ -100,6 +96,10 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
     setTemperature(temperature);
     setHumidity(humidity);
     setStatusIconName(weatherIconName);
+
+    tasksLoader()->setTemperature(temperature);
+    tasksLoader()->setWeatherStatus(weatherDescription);
+    tasksLoader()->setTasksList(tasksLoader()->getSuitableTasksWithWeather());
 
     reformatStatusText();
 }
@@ -258,4 +258,17 @@ void Weather::setDateTime(DateTime *newDateTime)
         return;
     m_dateTime = newDateTime;
     emit dateTimeChanged();
+}
+
+TasksLoader *Weather::tasksLoader() const
+{
+    return m_tasksLoader;
+}
+
+void Weather::setTasksLoader(TasksLoader *newTasksLoader)
+{
+    if (m_tasksLoader == newTasksLoader)
+        return;
+    m_tasksLoader = newTasksLoader;
+    emit tasksLoaderChanged();
 }
