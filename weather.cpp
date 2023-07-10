@@ -7,7 +7,7 @@ Weather::Weather(QObject *parent)
 
     reloadWeatherFromLocation("Texas");
 
-    QObject::connect(m_networkManager, &QNetworkAccessManager::finished,
+    connect(m_networkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
             setWeatherProperties(reply);
