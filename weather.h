@@ -43,6 +43,8 @@ class Weather : public QObject
 public:
     explicit Weather(QObject *parent = nullptr);
 
+    void sendHttpRequest(QNetworkAccessManager* networkManager, QUrl url);
+
     QString reformatCityToUrlCity(QString city);
 
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
@@ -55,6 +57,7 @@ public:
 
     void reformatStatusText();
     void getSuitableIconFromStatus();
+
 
     const QString &status() const;
     void setStatus(const QString &newStatus);

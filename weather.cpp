@@ -20,6 +20,12 @@ Weather::Weather(QObject *parent)
     });
 }
 
+void Weather::sendHttpRequest(QNetworkAccessManager *networkManager, QUrl url)
+{
+    m_networkRequest.setUrl(url);
+    networkManager->get(m_networkRequest);
+}
+
 QString Weather::reformatCityToUrlCity(QString city)
 {
     QString result;
@@ -49,8 +55,7 @@ void Weather::reloadWeatherFromLocation(QString city)
     m_apiURL = ("http://api.openweathermap.org/data/2.5/weather?q="
            + location().toStdString() + "&appid=" + apiKey);
 
-    m_networkRequest.setUrl(QUrl(QString::fromUtf8(m_apiURL.c_str())));
-    m_networkManager->get(m_networkRequest);
+    sendHttpRequest(m_networkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
 }
 
 double Weather::kelvin2Celsius(double kevinTemperature)
