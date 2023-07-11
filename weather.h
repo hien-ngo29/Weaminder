@@ -32,7 +32,7 @@ class Weather : public QObject
     Q_PROPERTY(double temperature READ temperature WRITE setTemperature NOTIFY temperatureChanged)
     Q_PROPERTY(double humidity READ humidity WRITE setHumidity NOTIFY humidityChanged)
     Q_PROPERTY(double windSpeed READ windSpeed WRITE setWindSpeed NOTIFY windSpeedChanged)
-    Q_PROPERTY(int uvIndex READ uvIndex WRITE setUvIndex NOTIFY uvIndexChanged)
+    Q_PROPERTY(double uvIndex READ uvIndex WRITE setUvIndex NOTIFY uvIndexChanged)
     Q_PROPERTY(int airPressure READ airPressure WRITE setAirPressure NOTIFY airPressureChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
     Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconName NOTIFY statusIconNameChanged)
@@ -75,8 +75,8 @@ public:
     double windSpeed() const;
     void setWindSpeed(double newWindSpeed);
 
-    int uvIndex() const;
-    void setUvIndex(int newUvIndex);
+    double uvIndex() const;
+    void setUvIndex(double newUvIndex);
 
     int airPressure() const;
     void setAirPressure(int newAirPressure);
@@ -122,7 +122,7 @@ private:
     double m_temperature;
     double m_humidity;
     double m_windSpeed;
-    int m_uvIndex;
+    double m_uvIndex;
     int m_airPressure;
 
     QString m_statusIconUrl;

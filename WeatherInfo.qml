@@ -55,4 +55,11 @@ Column {
         font.pointSize: 13
         font.weight: Font.Light
     }
+
+    Label {
+        id: uvIndexLabel
+        text: "UV: " + uvIndex
+        font.pointSize: 13
+        font.weight: Light
+    }
 }

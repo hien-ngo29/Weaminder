@@ -116,12 +116,18 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
     temperature = roundTemperature(temperature);
     int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[0].toInt();
     QString weatherDescription = jsonObject["weather"].toArray()[0].toObject()["description"].toString();
-    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[0].toDouble();;
+    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[0].toDouble();
+    double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[14].toDouble();
+
+    qDebug() << uvIndex;
+
+    std::cout << m_apiURL;
 
     setStatus(weatherDescription);
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
     setHumidity(humidity);
+    setUvIndex(uvIndex);
 
     tasksLoader()->setTemperature(temperature);
     tasksLoader()->setWeatherStatus(weatherDescription);
@@ -239,12 +245,12 @@ void Weather::setWindSpeed(double newWindSpeed)
     emit windSpeedChanged();
 }
 
-int Weather::uvIndex() const
+double Weather::uvIndex() const
 {
     return m_uvIndex;
 }
 
-void Weather::setUvIndex(int newUvIndex)
+void Weather::setUvIndex(double newUvIndex)
 {
     if (m_uvIndex == newUvIndex)
         return;
