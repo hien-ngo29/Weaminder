@@ -55,8 +55,8 @@ public:
 
     double roundTemperature(double temp);
 
-    void setWeatherProperties(QNetworkReply* reply);
-    void setCoordsAndTimezoneFromLocation(QNetworkReply* reply);
+    void setWeatherInfo(QNetworkReply* reply);
+    void setCityInfo(QNetworkReply* reply);
 
     void reformatStatusText();
     void getSuitableIconFromStatus();
@@ -133,7 +133,9 @@ private:
 
     DateTime* m_dateTime;
 
-    JsonReader jsonReader;
+    JsonReader m_jsonReader;
+
+    bool m_timeIsDay;
 
     QNetworkAccessManager* m_weatherNetworkManager;
     QNetworkAccessManager* m_cityCoordNetworkManager;

@@ -11,7 +11,7 @@ Weather::Weather(QObject *parent)
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setCoordsAndTimezoneFromLocation(reply);
+            setCityInfo(reply);
         }
 
         else {
@@ -23,7 +23,7 @@ Weather::Weather(QObject *parent)
     connect(m_weatherNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setWeatherProperties(reply);
+            setWeatherInfo(reply);
         }
 
         else {
@@ -101,9 +101,9 @@ double Weather::roundTemperature(double temp)
     return resultNum;
 }
 
-void Weather::setWeatherProperties(QNetworkReply *reply)
+void Weather::setWeatherInfo(QNetworkReply *reply)
 {
-    QJsonObject jsonObject = jsonReader.readJsonNetworkReply(reply);
+    QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
 
     double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[0].toDouble();
     temperature = roundTemperature(temperature);
@@ -111,10 +111,6 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
     QString weatherDescription = jsonObject["weather"].toArray()[0].toObject()["description"].toString();
     double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[0].toDouble();
     double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[14].toDouble();
-
-    qDebug() << uvIndex;
-
-    std::cout << m_apiURL;
 
     setStatus(weatherDescription);
     setWindSpeed(windSpeedkmh);
@@ -129,9 +125,9 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
     reformatStatusText();
 }
 
-void Weather::setCoordsAndTimezoneFromLocation(QNetworkReply* reply)
+void Weather::setCityInfo(QNetworkReply* reply)
 {
-    QJsonObject jsonObject = jsonReader.readJsonNetworkReply(reply);
+    QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
 
     float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
@@ -141,7 +137,7 @@ void Weather::setCoordsAndTimezoneFromLocation(QNetworkReply* reply)
 
     m_apiURL = "https://api.open-meteo.com/v1/forecast?"
                "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
-               "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index"
+               "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index,is_day"
                "&daily=weathercode&timezone=America%2FChicago";
 
     sendHttpRequest(m_weatherNetworkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
