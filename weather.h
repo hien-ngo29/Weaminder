@@ -24,6 +24,7 @@
 
 #include "datetime.h"
 #include "tasksloader.h"
+#include "jsonreader.h"
 
 class Weather : public QObject
 {
@@ -53,8 +54,6 @@ public:
     std::string number2StdString(auto number);
 
     double roundTemperature(double temp);
-
-    QJsonObject readJsonNetworkReply(QNetworkReply* reply);
 
     void setWeatherProperties(QNetworkReply* reply);
     void setCoordsAndTimezoneFromLocation(QNetworkReply* reply);
@@ -133,6 +132,8 @@ private:
     QString m_timezone;
 
     DateTime* m_dateTime;
+
+    JsonReader jsonReader;
 
     QNetworkAccessManager* m_weatherNetworkManager;
     QNetworkAccessManager* m_cityCoordNetworkManager;

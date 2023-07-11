@@ -103,7 +103,7 @@ double Weather::roundTemperature(double temp)
 
 void Weather::setWeatherProperties(QNetworkReply *reply)
 {
-    QJsonObject jsonObject = readJsonNetworkReply(reply);
+    QJsonObject jsonObject = jsonReader.readJsonNetworkReply(reply);
 
     double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[0].toDouble();
     temperature = roundTemperature(temperature);
@@ -131,7 +131,7 @@ void Weather::setWeatherProperties(QNetworkReply *reply)
 
 void Weather::setCoordsAndTimezoneFromLocation(QNetworkReply* reply)
 {
-    QJsonObject jsonObject = readJsonNetworkReply(reply);
+    QJsonObject jsonObject = jsonReader.readJsonNetworkReply(reply);
 
     float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();

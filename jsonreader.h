@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include <QByteArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 
 class JsonReader : public QObject
 {
