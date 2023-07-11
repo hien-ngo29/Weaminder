@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
         weather.h weather.cpp
         tasksloader.h tasksloader.cpp
         datetime.h datetime.cpp
+        jsonreader.h jsonreader.cpp
         qml.qrc
         resources.qrc
 )

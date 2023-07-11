@@ -101,13 +101,6 @@ double Weather::roundTemperature(double temp)
     return resultNum;
 }
 
-QJsonObject Weather::readJsonNetworkReply(QNetworkReply *reply)
-{
-    QByteArray response = reply->readAll();
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(response);
-    return jsonResponse.object();
-}
-
 void Weather::setWeatherProperties(QNetworkReply *reply)
 {
     QJsonObject jsonObject = readJsonNetworkReply(reply);
