@@ -3,11 +3,24 @@
 Weather::Weather(QObject *parent)
     : QObject{parent}
 {
-    m_networkManager = new QNetworkAccessManager();
+    m_cityCoordNetworkManager = new QNetworkAccessManager();
+    m_weatherNetworkManager = new QNetworkAccessManager();
 
-    reloadWeatherFromLocation("Texas");
+    reloadWeatherFromLocation("Houston");
 
-    connect(m_networkManager, &QNetworkAccessManager::finished,
+    connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
+    this, [=](QNetworkReply *reply) {
+        if (reply->error() == QNetworkReply::NoError) {
+            setCoordsAndTimezoneFromLocation(reply);
+        }
+
+        else {
+            qDebug() << reply->errorString();
+            return;
+        }
+    });
+
+    connect(m_weatherNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
             setWeatherProperties(reply);
@@ -52,10 +65,10 @@ void Weather::reloadWeatherFromLocation(QString city)
     city = reformatCityToUrlCity(city);
 
     setLocation(city);
-    m_apiURL = ("http://api.openweathermap.org/data/2.5/weather?q="
-           + location().toStdString() + "&appid=" + apiKey);
 
-    sendHttpRequest(m_networkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
+    sendHttpRequest(m_cityCoordNetworkManager,
+                    QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" + location() + "&count=1&language=en&format=json"));
+
 }
 
 double Weather::kelvin2Celsius(double kevinTemperature)
@@ -63,9 +76,16 @@ double Weather::kelvin2Celsius(double kevinTemperature)
     return kevinTemperature - 273.15;
 }
 
-double Weather::roundTo1Decimal(double number)
+std::string Weather::number2StdString(auto number)
 {
-    double resultNum = floor(number * 10.0) / 10.0;
+    std::ostringstream oss;
+    oss << number;
+    return oss.str();
+}
+
+double Weather::roundTemperature(double temp)
+{
+    double resultNum = floor(temp * 10.0) / 10.0;
 
     QString decimalToCheck = QString::number(resultNum);
     if (decimalToCheck.contains("."))
@@ -81,32 +101,51 @@ double Weather::roundTo1Decimal(double number)
     return resultNum;
 }
 
-void Weather::setWeatherProperties(QNetworkReply *reply)
+QJsonObject Weather::readJsonNetworkReply(QNetworkReply *reply)
 {
     QByteArray response = reply->readAll();
     QJsonDocument jsonResponse = QJsonDocument::fromJson(response);
-    QJsonObject jsonObject = jsonResponse.object();
+    return jsonResponse.object();
+}
 
-    double temperature = roundTo1Decimal(kelvin2Celsius(jsonObject["main"].toObject()["temp"].toDouble()));
-    int humidity = jsonObject["main"].toObject()["humidity"].toInt();
+void Weather::setWeatherProperties(QNetworkReply *reply)
+{
+    QJsonObject jsonObject = readJsonNetworkReply(reply);
+
+    double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[0].toDouble();
+    temperature = roundTemperature(temperature);
+    int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[0].toInt();
     QString weatherDescription = jsonObject["weather"].toArray()[0].toObject()["description"].toString();
-    double windSpeedms = jsonObject["wind"].toObject()["speed"].toDouble();
-    double windSpeedkmh = roundTo1Decimal(windSpeedms * 3.5);
-    double airPressure = jsonObject["main"].toObject()["pressure"].toDouble();
-    QString weatherIconName = jsonObject["weather"].toArray()[0].toObject()["icon"].toString();
+    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[0].toDouble();;
 
     setStatus(weatherDescription);
-    setAirPressure(airPressure);
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
     setHumidity(humidity);
-    setStatusIconName(weatherIconName);
 
     tasksLoader()->setTemperature(temperature);
     tasksLoader()->setWeatherStatus(weatherDescription);
     tasksLoader()->setTasksList(tasksLoader()->getSuitableTasksWithWeather());
 
     reformatStatusText();
+}
+
+void Weather::setCoordsAndTimezoneFromLocation(QNetworkReply* reply)
+{
+    QJsonObject jsonObject = readJsonNetworkReply(reply);
+
+    float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
+    float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
+
+    m_latitude = latitude;
+    m_longitude = longitude;
+
+    m_apiURL = "https://api.open-meteo.com/v1/forecast?"
+               "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
+               "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index"
+               "&daily=weathercode&timezone=America%2FChicago";
+
+    sendHttpRequest(m_weatherNetworkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
 }
 
 void Weather::reformatStatusText()

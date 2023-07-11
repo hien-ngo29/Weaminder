@@ -50,10 +50,14 @@ public:
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
     double kelvin2Celsius(double kevinTemperature);
+    std::string number2StdString(auto number);
 
-    double roundTo1Decimal(double number);
+    double roundTemperature(double temp);
+
+    QJsonObject readJsonNetworkReply(QNetworkReply* reply);
 
     void setWeatherProperties(QNetworkReply* reply);
+    void setCoordsAndTimezoneFromLocation(QNetworkReply* reply);
 
     void reformatStatusText();
     void getSuitableIconFromStatus();
@@ -124,10 +128,15 @@ private:
     QString m_statusIconUrl;
 
     QString m_location;
+    float m_latitude, m_longitude;
+
+    QString m_timezone;
 
     DateTime* m_dateTime;
 
-    QNetworkAccessManager* m_networkManager;
+    QNetworkAccessManager* m_weatherNetworkManager;
+    QNetworkAccessManager* m_cityCoordNetworkManager;
+
     QNetworkRequest m_networkRequest;
 
     const std::string apiKey = "9ae7907c3148b138968051b92b60f5e0";

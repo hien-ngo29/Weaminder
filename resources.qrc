@@ -7,5 +7,6 @@
         <file>icons/sunny.png</file>
         <file>icons/rainy.png</file>
         <file>icons/few-clouds.png</file>
+        <file>statusWeatherCode.json</file>
     </qresource>
 </RCC>
