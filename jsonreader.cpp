@@ -13,3 +13,18 @@ QJsonObject JsonReader::readJsonNetworkReply(QNetworkReply *reply)
     return jsonResponse.object();
 }
 
+QJsonObject JsonReader::readJsonFile(QString path)
+{
+    QString rawContent;
+    QFile file;
+
+    file.setFileName(path);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    rawContent = file.readAll();
+    file.close();
+
+    qWarning() << rawContent;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(rawContent.toUtf8());
+    return jsonDoc.object();
+}
+
