@@ -3,7 +3,7 @@
 DateTime::DateTime(QObject *parent)
     : QObject{parent}
 {
-    qDebug() << getCurrentRoundedTime();
+
 }
 
 QString DateTime::getCurrentTime()
@@ -19,11 +19,7 @@ QList<QString> DateTime::getFollowingHours()
     QList<QString> resultList;
 
     for (int i = 0; i < 24; i++) {
-        int hour = i;
-
-        for (int j = 0; j < 2; j++) {
-            resultList.append(QString::number(hour) + ( ( j == 0 ) ? ":00" : ":30" ));
-        }
+        resultList.append(QString::number(i) + ":00");
     }
 
     return resultList;
@@ -32,11 +28,19 @@ QList<QString> DateTime::getFollowingHours()
 QString DateTime::getCurrentRoundedTime()
 {
     QString currentTime = getCurrentTime();
+    QString hourSectionString = currentTime.split(":")[0];
     QString minuteSectionString = currentTime.split(":")[1];
+    int hourSection = hourSectionString.toInt();
     int minuteSection = minuteSectionString.toInt();
 
-    minuteSectionString = (minuteSection < 15) ? "00" : "30";
+    minuteSectionString = "00";
+    if (minuteSection > 30) {
+        hourSection += 1;
 
-    return currentTime.split(":")[0] + ":" + minuteSectionString;
+        QString newHourString = QString::number(hourSection);
+        hourSectionString = (newHourString.length() < 2 ? "0" : "") + newHourString;
+    }
+
+    return hourSectionString + ":" + minuteSectionString;
 }
 
