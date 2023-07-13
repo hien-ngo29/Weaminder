@@ -15,16 +15,22 @@ QJsonObject JsonReader::readJsonNetworkReply(QNetworkReply *reply)
 
 QJsonObject JsonReader::readJsonFile(QString path)
 {
-    QString rawContent;
-    QFile file;
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Error opening file:" << file.errorString();
+        return {};
+    }
 
-    file.setFileName(path);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    rawContent = file.readAll();
+    QByteArray jsonData = file.readAll();
     file.close();
 
-    qWarning() << rawContent;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(rawContent.toUtf8());
-    return jsonDoc.object();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
+    if (jsonDoc.isNull()) {
+        qDebug() << "Error parsing JSON";
+        return {};
+    }
+
+    QJsonObject jsonObj = jsonDoc.object();
+    return jsonObj;
 }
 
