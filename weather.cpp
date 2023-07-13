@@ -76,7 +76,8 @@ double Weather::kelvin2Celsius(double kevinTemperature)
     return kevinTemperature - 273.15;
 }
 
-std::string Weather::number2StdString(auto number)
+template <typename T>
+std::string Weather::number2StdString(T number)
 {
     std::ostringstream oss;
     oss << number;

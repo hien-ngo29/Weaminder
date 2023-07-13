@@ -51,9 +51,9 @@ public:
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
     double kelvin2Celsius(double kevinTemperature);
-    std::string number2StdString(float number);
-    std::string number2StdString(double number);
-    std::string number2StdString(int number);
+
+    template <typename T>
+    std::string number2StdString(T number);
 
     double roundTemperature(double temp);
 
