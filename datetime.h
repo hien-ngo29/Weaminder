@@ -19,7 +19,7 @@ public:
     Q_INVOKABLE QList<QString> getFollowingHours();
 
     Q_INVOKABLE QString getCurrentRoundedTime();
-    // "rounded time" means round it to 1(:00)  or half (:30)
+    // "rounded time" means round it to 1(:00)
 
 signals:
 
