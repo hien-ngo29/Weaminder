@@ -3,10 +3,13 @@
 Weather::Weather(QObject *parent)
     : QObject{parent}
 {
+    m_currentDay = 0; // 0 is current day, 1 is tomorrow,...
+    m_currentHourInDay = 23;
+
     m_cityCoordNetworkManager = new QNetworkAccessManager();
     m_weatherNetworkManager = new QNetworkAccessManager();
 
-    reloadWeatherFromLocation("Houston");
+    reloadWeatherFromLocation("Texas");
 
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
@@ -62,12 +65,33 @@ QString Weather::reformatCityToUrlCity(QString city)
 
 void Weather::reloadWeatherFromLocation(QString city)
 {
+    getCurrentHourFromCurrentHourInDay();
     city = reformatCityToUrlCity(city);
 
     setLocation(city);
 
     sendHttpRequest(m_cityCoordNetworkManager,
                     QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" + location() + "&count=1&language=en&format=json"));
+
+}
+
+QString Weather::getWeatherStatusFromCode(int weatherCode)
+{
+    QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
+    return statusWeatherCode[QString::number(weatherCode)]
+        .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["description"].toString();
+}
+
+QString Weather::getWeatherIconUrlFromCode(int weatherCode)
+{
+    QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
+    return statusWeatherCode[QString::number(weatherCode)]
+        .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["image"].toString();
+}
+
+int Weather::getCurrentHourFromCurrentHourInDay()
+{
+    m_currentHour = m_currentHourInDay + m_currentDay * 24;
 
 }
 
@@ -106,21 +130,28 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
 {
     QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
 
-    double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[0].toDouble();
-    temperature = roundTemperature(temperature);
-    int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[0].toInt();
-    QString weatherDescription = jsonObject["weather"].toArray()[0].toObject()["description"].toString();
-    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[0].toDouble();
-    double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[14].toDouble();
+    qDebug() <<  m_currentHour;
 
-    setStatus(weatherDescription);
+    double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[m_currentHour].toDouble();
+    temperature = roundTemperature(temperature);
+    int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[m_currentHour].toInt();
+    int weatherCode = jsonObject["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
+    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
+    double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
+    m_timeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+
+    QString weatherStatus = getWeatherStatusFromCode(weatherCode);
+    QString weatherIconPath = getWeatherIconUrlFromCode(weatherCode);
+
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
     setHumidity(humidity);
     setUvIndex(uvIndex);
+    setStatusIconUrl(weatherIconPath);
+    setStatus(weatherStatus);
 
     tasksLoader()->setTemperature(temperature);
-    tasksLoader()->setWeatherStatus(weatherDescription);
+    tasksLoader()->setWeatherStatus(weatherStatus);
     tasksLoader()->setTasksList(tasksLoader()->getSuitableTasksWithWeather());
 
     reformatStatusText();
@@ -140,6 +171,8 @@ void Weather::setCityInfo(QNetworkReply* reply)
                "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
                "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index,is_day"
                "&daily=weathercode&timezone=America%2FChicago";
+
+    m_timeIsDay = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
 
     sendHttpRequest(m_weatherNetworkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
 }
@@ -165,22 +198,22 @@ void Weather::getSuitableIconFromStatus()
     QString loweredStatusString = status().toLower();
 
     if (loweredStatusString == "clear sky") {
-        setStatusIconName("sunny");
+        setStatusIconUrl("sunny");
     }
 
     if (loweredStatusString.contains("rain")) // light or heavy rain
-        setStatusIconName("rainy");
+        setStatusIconUrl("rainy");
 
     else if (loweredStatusString == "broken clouds" ||
              loweredStatusString == "few clouds" ||
              loweredStatusString == "scattered clouds")
-        setStatusIconName("few-clouds");
+        setStatusIconUrl("few-clouds");
 
     else if (loweredStatusString.contains("snow"))
-        setStatusIconName("snowy");
+        setStatusIconUrl("snowy");
 
     else if (loweredStatusString.contains("clouds"))
-        setStatusIconName("cloudy");
+        setStatusIconUrl("cloudy");
 }
 
 const QString &Weather::status() const
@@ -279,12 +312,12 @@ const QString &Weather::statusIconUrl() const
     return m_statusIconUrl;
 }
 
-void Weather::setStatusIconName(const QString &newStatusIconName)
+void Weather::setStatusIconUrl(const QString &newStatusIconUrl)
 {
-    if (m_statusIconUrl == newStatusIconName)
+    if (m_statusIconUrl == newStatusIconUrl)
         return;
-    m_statusIconUrl = "https://openweathermap.org/img/wn/" + newStatusIconName + "@4x.png";
-    emit statusIconNameChanged();
+    m_statusIconUrl = newStatusIconUrl;
+    emit statusIconUrlChanged();
 }
 
 DateTime *Weather::dateTime() const
@@ -311,4 +344,30 @@ void Weather::setTasksLoader(TasksLoader *newTasksLoader)
         return;
     m_tasksLoader = newTasksLoader;
     emit tasksLoaderChanged();
+}
+
+int Weather::currentDay() const
+{
+    return m_currentDay;
+}
+
+void Weather::setCurrentDay(int newCurrentDay)
+{
+    if (m_currentDay == newCurrentDay)
+        return;
+    m_currentDay = newCurrentDay;
+    emit currentDayChanged();
+}
+
+int Weather::currentHourInDay() const
+{
+    return m_currentHourInDay;
+}
+
+void Weather::setCurrentHourInDay(int newCurrentHourInDay)
+{
+    if (m_currentHourInDay == newCurrentHourInDay)
+        return;
+    m_currentHourInDay = newCurrentHourInDay;
+    emit currentHourInDayChanged();
 }

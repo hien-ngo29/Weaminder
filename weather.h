@@ -36,9 +36,11 @@ class Weather : public QObject
     Q_PROPERTY(double uvIndex READ uvIndex WRITE setUvIndex NOTIFY uvIndexChanged)
     Q_PROPERTY(int airPressure READ airPressure WRITE setAirPressure NOTIFY airPressureChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
-    Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconName NOTIFY statusIconNameChanged)
+    Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconUrl NOTIFY statusIconUrlChanged)
     Q_PROPERTY(DateTime *dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged)
     Q_PROPERTY(TasksLoader *tasksLoader READ tasksLoader WRITE setTasksLoader NOTIFY tasksLoaderChanged)
+    Q_PROPERTY(int currentDay READ currentDay WRITE setCurrentDay NOTIFY currentDayChanged)
+    Q_PROPERTY(int currentHourInDay READ currentHourInDay WRITE setCurrentHourInDay NOTIFY currentHourInDayChanged)
     QML_ELEMENT
 
 public:
@@ -49,6 +51,11 @@ public:
     QString reformatCityToUrlCity(QString city);
 
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
+
+    QString getWeatherStatusFromCode(int weatherCode);
+    QString getWeatherIconUrlFromCode(int weatherCode);
+
+    int getCurrentHourFromCurrentHourInDay();
 
     double kelvin2Celsius(double kevinTemperature);
 
@@ -62,7 +69,6 @@ public:
 
     void reformatStatusText();
     void getSuitableIconFromStatus();
-
 
     const QString &status() const;
     void setStatus(const QString &newStatus);
@@ -86,13 +92,19 @@ public:
     void setLocation(const QString &newLocation);
 
     const QString &statusIconUrl() const;
-    void setStatusIconName(const QString &newStatusIconName);
+    void setStatusIconUrl(const QString &newStatusIconName);
 
     DateTime *dateTime() const;
     void setDateTime(DateTime *newDateTime);
 
     TasksLoader *tasksLoader() const;
     void setTasksLoader(TasksLoader *newTasksLoader);
+
+    int currentDay() const;
+    void setCurrentDay(int newCurrentDay);
+
+    int currentHourInDay() const;
+    void setCurrentHourInDay(int newCurrentHourInDay);
 
 signals:
 
@@ -110,11 +122,15 @@ signals:
 
     void locationChanged();
 
-    void statusIconNameChanged();
+    void statusIconUrlChanged();
 
     void dateTimeChanged();
 
     void tasksLoaderChanged();
+
+    void currentDayChanged();
+
+    void currentHourInDayChanged();
 
 private:
     TasksLoader* m_tasksLoader;
@@ -125,6 +141,12 @@ private:
     double m_windSpeed;
     double m_uvIndex;
     int m_airPressure;
+
+    int m_currentDay;
+
+    /* For example, if currentHour = 25 then the currentHourInDay = 1, understand? */
+    int m_currentHourInDay;
+    int m_currentHour;
 
     QString m_statusIconUrl;
 
