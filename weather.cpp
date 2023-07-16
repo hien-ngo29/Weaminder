@@ -89,9 +89,26 @@ QString Weather::getWeatherIconUrlFromCode(int weatherCode)
         .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["image"].toString();
 }
 
-int Weather::getCurrentHourFromCurrentHourInDay()
+void Weather::setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson)
 {
-    m_currentHour = m_currentHourInDay + m_currentDay * 24;
+    // We will "borrow" the attribute m_currentHourInDay and m_currentHour to do it, then give them back
+    int currentHourInDayTemp = m_currentHourInDay;
+    int currentHourTemp = m_currentHour;
+
+    for (m_currentHourInDay = 0; m_currentHourInDay < 24; m_currentHourInDay++) {
+        getCurrentHourFromCurrentHourInDay();
+        QString currentPath = getWeatherIconUrlFromCode(weatherCodeJson[m_currentHour].toInt());
+        m_weatherIconPaths.append(currentPath);
+    }
+
+    // Give their data back
+    m_currentHourInDay = currentHourInDayTemp;
+    m_currentHour = currentHourTemp;
+}
+
+void Weather::getCurrentHourFromCurrentHourInDay()
+{
+   m_currentHour = m_currentHourInDay + m_currentDay * 24;
 
 }
 
@@ -139,6 +156,8 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
     double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
     m_timeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+
+    setWeatherIconPathsFromEachHour(jsonObject["hourly"].toObject()["weathercode"].toArray());
 
     QString weatherStatus = getWeatherStatusFromCode(weatherCode);
     QString weatherIconPath = getWeatherIconUrlFromCode(weatherCode);
@@ -370,4 +389,17 @@ void Weather::setCurrentHourInDay(int newCurrentHourInDay)
         return;
     m_currentHourInDay = newCurrentHourInDay;
     emit currentHourInDayChanged();
+}
+
+QStringList Weather::weatherIconPaths() const
+{
+    return m_weatherIconPaths;
+}
+
+void Weather::setWeatherIconPaths(const QStringList &newWeatherIconPaths)
+{
+    if (m_weatherIconPaths == newWeatherIconPaths)
+        return;
+    m_weatherIconPaths = newWeatherIconPaths;
+    emit weatherIconPathsChanged();
 }

@@ -20,7 +20,7 @@ ComboBox {
             spacing: 10
 
             Image {
-                source: "icons/sunny.png" // Set the icon source dynamically
+                source: modelIcon
                 width: 32
                 height: 32
                 anchors.verticalCenter: parent.verticalCenter
@@ -44,11 +44,14 @@ ComboBox {
     }
 
     function addTimeToList() {
-        for (let index in dateTime.getFollowingHours())
-            listModel.append({text :
-                                dateTime.getFollowingHours()[index],
-                             });
+        for (let i = 0; i < 24; i++)
+            listModel.append({
+                modelData: dateTime.getFollowingHours()[i],
+                modelIcon: weather.weatherIconPaths[i]
+            });
     }
 
-    Component.onCompleted: addTimeToList()
+//    Component.onCompleted: {
+//        addTimeToList()
+//    }
 }

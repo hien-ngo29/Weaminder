@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QDebug>
+#include <QStringList>
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -41,6 +42,7 @@ class Weather : public QObject
     Q_PROPERTY(TasksLoader *tasksLoader READ tasksLoader WRITE setTasksLoader NOTIFY tasksLoaderChanged)
     Q_PROPERTY(int currentDay READ currentDay WRITE setCurrentDay NOTIFY currentDayChanged)
     Q_PROPERTY(int currentHourInDay READ currentHourInDay WRITE setCurrentHourInDay NOTIFY currentHourInDayChanged)
+    Q_PROPERTY(QStringList weatherIconPaths READ weatherIconPaths WRITE setWeatherIconPaths NOTIFY weatherIconPathsChanged)
     QML_ELEMENT
 
 public:
@@ -55,7 +57,9 @@ public:
     QString getWeatherStatusFromCode(int weatherCode);
     QString getWeatherIconUrlFromCode(int weatherCode);
 
-    int getCurrentHourFromCurrentHourInDay();
+    void setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson);
+
+    void getCurrentHourFromCurrentHourInDay();
 
     double kelvin2Celsius(double kevinTemperature);
 
@@ -106,6 +110,9 @@ public:
     int currentHourInDay() const;
     void setCurrentHourInDay(int newCurrentHourInDay);
 
+    QStringList weatherIconPaths() const;
+    void setWeatherIconPaths(const QStringList &newWeatherIconPaths);
+
 signals:
 
     void statusChanged();
@@ -131,6 +138,8 @@ signals:
     void currentDayChanged();
 
     void currentHourInDayChanged();
+
+    void weatherIconPathsChanged();
 
 private:
     TasksLoader* m_tasksLoader;
@@ -160,6 +169,8 @@ private:
     JsonReader m_jsonReader;
 
     bool m_timeIsDay;
+
+    QStringList m_weatherIconPaths;
 
     QNetworkAccessManager* m_weatherNetworkManager;
     QNetworkAccessManager* m_cityCoordNetworkManager;

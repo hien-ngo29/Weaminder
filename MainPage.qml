@@ -19,7 +19,10 @@ Item {
     TasksLoader {
         id: tasksLoader
 
-        onTemperatureChanged: taskListView.reloadTasks()
+        onTemperatureChanged: {
+            taskListView.reloadTasks()
+            weatherTimeSelector.addTimeToList()
+        }
     }
 
     Weather {
