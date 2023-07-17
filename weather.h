@@ -5,6 +5,7 @@
 #include <QString>
 #include <QDebug>
 #include <QStringList>
+#include <QVariant>
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -55,7 +56,7 @@ public:
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
     QString getWeatherStatusFromCode(int weatherCode);
-    QString getWeatherIconUrlFromCode(int weatherCode);
+    QString getWeatherIconUrlFromCode(int weatherCode, int scale);
 
     void setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson);
 

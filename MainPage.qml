@@ -28,6 +28,7 @@ Item {
     Weather {
         id: weather
         tasksLoader: tasksLoader
+
     }
 
     WeatherTimeSelector {

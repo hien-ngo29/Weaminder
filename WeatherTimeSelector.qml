@@ -16,15 +16,23 @@ ComboBox {
         width: parent.width
         height: 50
 
+        Rectangle {
+            id: background
+            anchors.fill: parent
+            color: (isHighlighted === false) ? "#949494" : "#bababa"
+        }
+
         Row {
             spacing: 10
 
+            anchors.verticalCenter: parent.verticalCenter
+
             Image {
                 source: modelIcon
-                width: 32
-                height: 32
-                anchors.verticalCenter: parent.verticalCenter
+                width: 50
+                height: 50
                 anchors.margins: 8
+                anchors.verticalCenter: parent.verticalCenter
             }
 
             Label {
@@ -37,21 +45,27 @@ ComboBox {
         MouseArea {
             anchors.fill: parent
             onClicked: {
+                listModel.get(currentIndex).isHighlighted = false
                 currentIndex = index
+                listModel.get(index).isHighlighted = true
+
+                weather.currentHourInDay = index
+                weather.reloadWeatherFromLocation(citySelector.currentText)
+
                 weatherTimeSelector.popup.close()
             }
         }
     }
 
     function addTimeToList() {
-        for (let i = 0; i < 24; i++)
+        listModel.clear()
+        currentIndex = weather.currentHourInDay
+        for (var i = 0; i < 24; i++) {
             listModel.append({
                 modelData: dateTime.getFollowingHours()[i],
-                modelIcon: weather.weatherIconPaths[i]
+                modelIcon: weather.weatherIconPaths[i],
+                isHighlighted: currentIndex === i
             });
+        }
     }
-
-//    Component.onCompleted: {
-//        addTimeToList()
-//    }
 }

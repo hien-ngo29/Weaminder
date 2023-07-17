@@ -4,7 +4,7 @@ Weather::Weather(QObject *parent)
     : QObject{parent}
 {
     m_currentDay = 0; // 0 is current day, 1 is tomorrow,...
-    m_currentHourInDay = 23;
+    m_currentHourInDay = dateTime()->getCurrentRoundedTime().split(":")[0].toInt();
 
     m_cityCoordNetworkManager = new QNetworkAccessManager();
     m_weatherNetworkManager = new QNetworkAccessManager();
@@ -71,7 +71,7 @@ void Weather::reloadWeatherFromLocation(QString city)
     setLocation(city);
 
     sendHttpRequest(m_cityCoordNetworkManager,
-                    QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" + location() + "&count=1&language=en&format=json"));
+        QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" + location() + "&count=1&language=en&format=json"));
 
 }
 
@@ -82,11 +82,12 @@ QString Weather::getWeatherStatusFromCode(int weatherCode)
         .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["description"].toString();
 }
 
-QString Weather::getWeatherIconUrlFromCode(int weatherCode)
+QString Weather::getWeatherIconUrlFromCode(int weatherCode, int scale)
 {
     QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
     return statusWeatherCode[QString::number(weatherCode)]
-        .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["image"].toString();
+        .toObject()[( m_timeIsDay ? "day" : "night")].
+        toObject()["image"].toString().replace("4x", QString::number(scale) + "x");
 }
 
 void Weather::setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson)
@@ -95,9 +96,11 @@ void Weather::setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson)
     int currentHourInDayTemp = m_currentHourInDay;
     int currentHourTemp = m_currentHour;
 
+    m_weatherIconPaths.clear();
+
     for (m_currentHourInDay = 0; m_currentHourInDay < 24; m_currentHourInDay++) {
         getCurrentHourFromCurrentHourInDay();
-        QString currentPath = getWeatherIconUrlFromCode(weatherCodeJson[m_currentHour].toInt());
+        QString currentPath = getWeatherIconUrlFromCode(weatherCodeJson[m_currentHour].toInt(), 2);
         m_weatherIconPaths.append(currentPath);
     }
 
@@ -160,7 +163,7 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     setWeatherIconPathsFromEachHour(jsonObject["hourly"].toObject()["weathercode"].toArray());
 
     QString weatherStatus = getWeatherStatusFromCode(weatherCode);
-    QString weatherIconPath = getWeatherIconUrlFromCode(weatherCode);
+    QString weatherIconPath = getWeatherIconUrlFromCode(weatherCode, 4);
 
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);

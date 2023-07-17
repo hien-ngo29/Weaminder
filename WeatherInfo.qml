@@ -32,7 +32,6 @@ Column {
         id: statusLabel
         text: "Status: " + weatherStatus
         font.pointSize: 14
-        font.weight: Font.bold
     }
 
     Label {
