@@ -55,10 +55,10 @@ public:
 
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
-    QString getWeatherStatusFromCode(int weatherCode);
-    QString getWeatherIconUrlFromCode(int weatherCode, int scale);
+    QString getWeatherStatusFromCode(QJsonObject weatherJsonObject);
+    QString getWeatherIconUrlFromCode(QJsonObject weatherJsonObject, int scale);
 
-    void setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson);
+    void setWeatherIconPathsFromEachHour(QJsonObject weatherJsonObject);
 
     void getCurrentHourFromCurrentHourInDay();
 
@@ -73,7 +73,6 @@ public:
     void setCityInfo(QNetworkReply* reply);
 
     void reformatStatusText();
-    void getSuitableIconFromStatus();
 
     const QString &status() const;
     void setStatus(const QString &newStatus);

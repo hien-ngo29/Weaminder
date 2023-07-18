@@ -75,22 +75,34 @@ void Weather::reloadWeatherFromLocation(QString city)
 
 }
 
-QString Weather::getWeatherStatusFromCode(int weatherCode)
+QString Weather::getWeatherStatusFromCode(QJsonObject weatherJsonObject)
 {
     QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
-    return statusWeatherCode[QString::number(weatherCode)]
-        .toObject()[( m_timeIsDay ? "day" : "night")].toObject()["description"].toString();
+
+    QString weatherCode = QString::number(weatherJsonObject["hourly"]
+                                              .toObject()["weathercode"].toArray()[m_currentHour].toInt());
+
+    bool timeIsDay = !!weatherJsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+
+    return statusWeatherCode[weatherCode]
+        .toObject()[( timeIsDay ? "day" : "night")].toObject()["description"].toString();
 }
 
-QString Weather::getWeatherIconUrlFromCode(int weatherCode, int scale)
+QString Weather::getWeatherIconUrlFromCode(QJsonObject weatherJsonObject, int scale)
 {
     QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
-    return statusWeatherCode[QString::number(weatherCode)]
-        .toObject()[( m_timeIsDay ? "day" : "night")].
+
+    QString weatherCode = QString::number(weatherJsonObject["hourly"]
+                                              .toObject()["weathercode"].toArray()[m_currentHour].toInt());
+
+    bool timeIsDay = !!weatherJsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+
+    return statusWeatherCode[weatherCode]
+        .toObject()[( timeIsDay ? "day" : "night")].
         toObject()["image"].toString().replace("4x", QString::number(scale) + "x");
 }
 
-void Weather::setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson)
+void Weather::setWeatherIconPathsFromEachHour(QJsonObject weatherJsonObject)
 {
     // We will "borrow" the attribute m_currentHourInDay and m_currentHour to do it, then give them back
     int currentHourInDayTemp = m_currentHourInDay;
@@ -100,7 +112,7 @@ void Weather::setWeatherIconPathsFromEachHour(QJsonArray weatherCodeJson)
 
     for (m_currentHourInDay = 0; m_currentHourInDay < 24; m_currentHourInDay++) {
         getCurrentHourFromCurrentHourInDay();
-        QString currentPath = getWeatherIconUrlFromCode(weatherCodeJson[m_currentHour].toInt(), 2);
+        QString currentPath = getWeatherIconUrlFromCode(weatherJsonObject, 2);
         m_weatherIconPaths.append(currentPath);
     }
 
@@ -160,10 +172,10 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
     m_timeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
-    setWeatherIconPathsFromEachHour(jsonObject["hourly"].toObject()["weathercode"].toArray());
+    setWeatherIconPathsFromEachHour(jsonObject);
 
-    QString weatherStatus = getWeatherStatusFromCode(weatherCode);
-    QString weatherIconPath = getWeatherIconUrlFromCode(weatherCode, 4);
+    QString weatherStatus = getWeatherStatusFromCode(jsonObject);
+    QString weatherIconPath = getWeatherIconUrlFromCode(jsonObject, 4);
 
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
@@ -186,7 +198,6 @@ void Weather::setCityInfo(QNetworkReply* reply)
     float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
 
-    m_timeIsDay = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     m_timezone = jsonObject["results"].toArray()[0].toObject()["timezone"].toString();
 
     m_latitude = latitude;
@@ -214,29 +225,6 @@ void Weather::reformatStatusText()
         }
     }
     setStatus(resultStringStatus);
-}
-
-void Weather::getSuitableIconFromStatus()
-{
-    QString loweredStatusString = status().toLower();
-
-    if (loweredStatusString == "clear sky") {
-        setStatusIconUrl("sunny");
-    }
-
-    if (loweredStatusString.contains("rain")) // light or heavy rain
-        setStatusIconUrl("rainy");
-
-    else if (loweredStatusString == "broken clouds" ||
-             loweredStatusString == "few clouds" ||
-             loweredStatusString == "scattered clouds")
-        setStatusIconUrl("few-clouds");
-
-    else if (loweredStatusString.contains("snow"))
-        setStatusIconUrl("snowy");
-
-    else if (loweredStatusString.contains("clouds"))
-        setStatusIconUrl("cloudy");
 }
 
 const QString &Weather::status() const
