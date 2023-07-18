@@ -38,7 +38,7 @@ ComboBox {
         "Nha Trang, Vietnam"
     ]
 
-    currentIndex: 18 // Texas, USA
+    currentIndex: 7 // Houston, USA
 
     onCurrentIndexChanged: {
         weather.reloadWeatherFromLocation(model[currentIndex])

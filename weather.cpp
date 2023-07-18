@@ -9,7 +9,7 @@ Weather::Weather(QObject *parent)
     m_cityCoordNetworkManager = new QNetworkAccessManager();
     m_weatherNetworkManager = new QNetworkAccessManager();
 
-    reloadWeatherFromLocation("Texas");
+    reloadWeatherFromLocation("Houston");
 
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
@@ -186,15 +186,16 @@ void Weather::setCityInfo(QNetworkReply* reply)
     float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
 
+    m_timeIsDay = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
+    m_timezone = jsonObject["results"].toArray()[0].toObject()["timezone"].toString();
+
     m_latitude = latitude;
     m_longitude = longitude;
 
-    m_apiURL = "https://api.open-meteo.com/v1/forecast?"
-               "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
-               "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index,is_day"
-               "&daily=weathercode&timezone=America%2FChicago";
-
-    m_timeIsDay = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
+    m_apiURL =  "https://api.open-meteo.com/v1/forecast?"
+                "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
+                "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index,is_day"
+                "&daily=weathercode&timezone=" + m_timezone.toStdString();
 
     sendHttpRequest(m_weatherNetworkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
 }
