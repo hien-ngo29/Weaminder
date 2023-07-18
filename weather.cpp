@@ -170,7 +170,7 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     int weatherCode = jsonObject["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
     double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
     double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
-    m_timeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+    m_currentTimeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
     setWeatherIconPathsFromEachHour(jsonObject);
 
@@ -198,7 +198,7 @@ void Weather::setCityInfo(QNetworkReply* reply)
     float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
     float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
 
-    m_timezone = jsonObject["results"].toArray()[0].toObject()["timezone"].toString();
+    m_currentTimezone = jsonObject["results"].toArray()[0].toObject()["timezone"].toString();
 
     m_latitude = latitude;
     m_longitude = longitude;
@@ -206,7 +206,7 @@ void Weather::setCityInfo(QNetworkReply* reply)
     m_apiURL =  "https://api.open-meteo.com/v1/forecast?"
                 "latitude=" + number2StdString(latitude) + "&longitude=" + number2StdString(longitude) +
                 "&hourly=temperature_2m,relativehumidity_2m,rain,weathercode,visibility,windspeed_10m,uv_index,is_day"
-                "&daily=weathercode&timezone=" + m_timezone.toStdString();
+                "&daily=weathercode&timezone=" + m_currentTimezone.toStdString();
 
     sendHttpRequest(m_weatherNetworkManager, QUrl(QString::fromUtf8(m_apiURL.c_str())));
 }

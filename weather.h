@@ -162,13 +162,13 @@ private:
     QString m_location;
     float m_latitude, m_longitude;
 
-    QString m_timezone;
+    QString m_currentTimezone;
 
     DateTime* m_dateTime;
 
     JsonReader m_jsonReader;
 
-    bool m_timeIsDay;
+    bool m_currentTimeIsDay;
 
     QStringList m_weatherIconPaths;
 
