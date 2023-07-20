@@ -4,9 +4,6 @@ import QtQuick.Layouts 1.15
 
 
 ComboBox {
-    anchors.right: parent.right
-    anchors.left: parent.left
-
     model: [
         "Toronto, Canada",
         "Montreal, Canada",

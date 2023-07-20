@@ -31,62 +31,52 @@ Item {
 
     }
 
-    WeatherTimeSelector {
-        id: weatherTimeSelector
-
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.left: parent.horizontalCenter + 20
-
+    ColumnLayout {
+        anchors.fill: parent
         anchors.margins: 8
-    }
 
-    CitySelector {
-        id: citySelector
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 2
 
-        anchors.right: weatherTimeSelector.left
-        anchors.left: parent.left
-        anchors.top: parent.top
+            CitySelector {
+                id: citySelector
+                implicitWidth: 220
+            }
 
-        anchors.margins: 8
-    }
+            WeatherTimeSelector {
+                id: weatherTimeSelector
+                implicitWidth: 120
+            }
+        }
 
-    WeatherInfo {
-        id: weatherInfoWidget
-        anchors.margins: 8
-        anchors.right: parent.right
-        anchors.left: parent.left
+        WeatherInfo {
+            id: weatherInfoWidget
 
-        anchors.top: citySelector.bottom
+            Layout.fillWidth: true
 
-        weatherStatus: weather.status
-        weatherStatusIconPath: weather.statusIconUrl
-        temperature: weather.temperature
-        humidity: weather.humidity
-        windSpeed: weather.windSpeed
-        uvIndex: weather.uvIndex
-        airPressure: weather.airPressure
-    }
+            weatherStatus: weather.status
+            weatherStatusIconPath: weather.statusIconUrl
+            temperature: weather.temperature
+            humidity: weather.humidity
+            windSpeed: weather.windSpeed
+            uvIndex: weather.uvIndex
+            airPressure: weather.airPressure
+        }
 
-    Label {
-        id: rememberTitle
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.top: weatherInfoWidget.bottom
-        anchors.margins: 8
-        anchors.topMargin: 12
+        Label {
+            id: rememberTitle
 
-        text: "Remember to:"
-        font.pointSize: 13
-    }
+            text: "Remember to:"
+            font.pointSize: 13
+        }
 
-    TasksListView {
-        id: taskListView
-        anchors.margins: 8
-        anchors.top: rememberTitle.bottom
-        anchors.right: parent.right
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
+        TasksListView {
+            id: taskListView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+        }
     }
 
     EasterEgg {

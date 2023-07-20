@@ -5,9 +5,6 @@ import QtQuick.Layouts 1.15
 ComboBox {
     id: weatherTimeSelector
 
-    anchors.right: parent.right
-    anchors.left: parent.left
-
     model: ListModel {
         id: listModel
     }
