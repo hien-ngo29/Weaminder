@@ -67,8 +67,6 @@ public:
     template <typename T>
     std::string number2StdString(T number);
 
-    double roundTemperature(double temp);
-
     void setWeatherInfo(QNetworkReply* reply);
     void setCityInfo(QNetworkReply* reply);
 

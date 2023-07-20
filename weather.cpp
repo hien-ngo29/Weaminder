@@ -140,24 +140,6 @@ std::string Weather::number2StdString(T number)
     return oss.str();
 }
 
-double Weather::roundTemperature(double temp)
-{
-    double resultNum = floor(temp * 10.0) / 10.0;
-
-    QString decimalToCheck = QString::number(resultNum);
-    if (decimalToCheck.contains("."))
-        decimalToCheck = decimalToCheck.split(".")[1];
-    else
-        return resultNum;
-
-    if (decimalToCheck == '6' || decimalToCheck == '1')
-        resultNum -= 0.1;
-    if (decimalToCheck == '9' || decimalToCheck == '4')
-        resultNum += 0.1;
-
-    return resultNum;
-}
-
 void Weather::setWeatherInfo(QNetworkReply *reply)
 {
     QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
@@ -165,7 +147,7 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     qDebug() <<  m_currentHour;
 
     double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[m_currentHour].toDouble();
-    temperature = roundTemperature(temperature);
+    temperature = round(temperature);
     int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[m_currentHour].toInt();
     int weatherCode = jsonObject["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
     double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
