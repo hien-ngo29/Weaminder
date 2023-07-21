@@ -78,6 +78,12 @@ Item {
         }
     }
 
+    SelectDayButton {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 8
+    }
+
     EasterEgg {
         anchors.fill: parent
     }

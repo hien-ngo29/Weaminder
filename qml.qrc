@@ -10,5 +10,6 @@
         <file>CitySelector.qml</file>
         <file>EasterEgg.qml</file>
         <file>WeatherTimeSelector.qml</file>
+        <file>SelectDayButton.qml</file>
     </qresource>
 </RCC>
