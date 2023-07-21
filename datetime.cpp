@@ -44,3 +44,8 @@ QString DateTime::getCurrentRoundedTime()
     return hourSectionString + ":" + minuteSectionString;
 }
 
+QStringList DateTime::getFollowingDaysInWeek()
+{
+    return {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+}
+
