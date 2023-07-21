@@ -1,12 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>qtquickcontrols2.conf</file>
-        <file>icons/cloudy.png</file>
-        <file>icons/snowy.png</file>
-        <file>icons/stormy.png</file>
-        <file>icons/sunny.png</file>
-        <file>icons/rainy.png</file>
-        <file>icons/few-clouds.png</file>
         <file>statusWeatherCode.json</file>
+        <file>icons/timetable.png</file>
     </qresource>
 </RCC>
