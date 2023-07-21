@@ -14,7 +14,7 @@ Weather::Weather(QObject *parent)
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setCityInfo(reply);
+            setCityInfo(m_jsonReader.readJsonNetworkReply(reply));
         }
 
         else {
@@ -26,7 +26,7 @@ Weather::Weather(QObject *parent)
     connect(m_weatherNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setWeatherInfo(reply);
+            setWeatherInfo(m_jsonReader.readJsonNetworkReply(reply));
         }
 
         else {
@@ -65,13 +65,19 @@ QString Weather::reformatCityToUrlCity(QString city)
 
 void Weather::reloadWeatherFromLocation(QString city)
 {
-    getCurrentHourFromCurrentHourInDay();
     city = reformatCityToUrlCity(city);
+    getCurrentHourFromCurrentHourInDay();
 
-    setLocation(city);
+    if (city != m_location) {
+        setLocation(city);
 
-    sendHttpRequest(m_cityCoordNetworkManager,
-        QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" + location() + "&count=1&language=en&format=json"));
+        sendHttpRequest(m_cityCoordNetworkManager,
+                        QUrl("https://geocoding-api.open-meteo.com/v1/search?name=" +
+                            location() + "&count=1&language=en&format=json"));
+    } else {
+        setWeatherInfo(m_oldWeatherJsonData);
+        qDebug() << "Code ran";
+    }
 
 }
 
@@ -140,24 +146,22 @@ std::string Weather::number2StdString(T number)
     return oss.str();
 }
 
-void Weather::setWeatherInfo(QNetworkReply *reply)
+void Weather::setWeatherInfo(QJsonObject weatherJsonData)
 {
-    QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
+    m_oldWeatherJsonData = weatherJsonData;
 
-    qDebug() <<  m_currentHour;
-
-    double temperature = jsonObject["hourly"].toObject()["temperature_2m"].toArray()[m_currentHour].toDouble();
+    double temperature = weatherJsonData["hourly"].toObject()["temperature_2m"].toArray()[m_currentHour].toDouble();
     temperature = round(temperature);
-    int humidity = jsonObject["hourly"].toObject()["relativehumidity_2m"].toArray()[m_currentHour].toInt();
-    int weatherCode = jsonObject["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
-    double windSpeedkmh = jsonObject["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
-    double uvIndex = jsonObject["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
-    m_currentTimeIsDay = !!jsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
+    int humidity = weatherJsonData["hourly"].toObject()["relativehumidity_2m"].toArray()[m_currentHour].toInt();
+    int weatherCode = weatherJsonData["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
+    double windSpeedkmh = weatherJsonData["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
+    double uvIndex = weatherJsonData["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
+    m_currentTimeIsDay = !!weatherJsonData["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
-    setWeatherIconPathsFromEachHour(jsonObject);
+    setWeatherIconPathsFromEachHour(weatherJsonData);
 
-    QString weatherStatus = getWeatherStatusFromCode(jsonObject);
-    QString weatherIconPath = getWeatherIconUrlFromCode(jsonObject, 4);
+    QString weatherStatus = getWeatherStatusFromCode(weatherJsonData);
+    QString weatherIconPath = getWeatherIconUrlFromCode(weatherJsonData, 4);
 
     setWindSpeed(windSpeedkmh);
     setTemperature(temperature);
@@ -173,14 +177,12 @@ void Weather::setWeatherInfo(QNetworkReply *reply)
     reformatStatusText();
 }
 
-void Weather::setCityInfo(QNetworkReply* reply)
+void Weather::setCityInfo(QJsonObject cityJsonData)
 {
-    QJsonObject jsonObject = m_jsonReader.readJsonNetworkReply(reply);
+    float latitude = cityJsonData["results"].toArray()[0].toObject()["latitude"].toDouble();
+    float longitude = cityJsonData["results"].toArray()[0].toObject()["longitude"].toDouble();
 
-    float latitude = jsonObject["results"].toArray()[0].toObject()["latitude"].toDouble();
-    float longitude = jsonObject["results"].toArray()[0].toObject()["longitude"].toDouble();
-
-    m_currentTimezone = jsonObject["results"].toArray()[0].toObject()["timezone"].toString();
+    m_currentTimezone = cityJsonData["results"].toArray()[0].toObject()["timezone"].toString();
 
     m_latitude = latitude;
     m_longitude = longitude;

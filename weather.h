@@ -67,8 +67,8 @@ public:
     template <typename T>
     std::string number2StdString(T number);
 
-    void setWeatherInfo(QNetworkReply* reply);
-    void setCityInfo(QNetworkReply* reply);
+    void setWeatherInfo(QJsonObject weatherJsonData);
+    void setCityInfo(QJsonObject cityJsonData);
 
     void reformatStatusText();
 
@@ -169,6 +169,8 @@ private:
     bool m_currentTimeIsDay;
 
     QStringList m_weatherIconPaths;
+
+    QJsonObject m_oldWeatherJsonData;
 
     QNetworkAccessManager* m_weatherNetworkManager;
     QNetworkAccessManager* m_cityCoordNetworkManager;
