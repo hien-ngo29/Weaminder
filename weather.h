@@ -36,7 +36,6 @@ class Weather : public QObject
     Q_PROPERTY(double humidity READ humidity WRITE setHumidity NOTIFY humidityChanged)
     Q_PROPERTY(double windSpeed READ windSpeed WRITE setWindSpeed NOTIFY windSpeedChanged)
     Q_PROPERTY(double uvIndex READ uvIndex WRITE setUvIndex NOTIFY uvIndexChanged)
-    Q_PROPERTY(int airPressure READ airPressure WRITE setAirPressure NOTIFY airPressureChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
     Q_PROPERTY(QString statusIconUrl READ statusIconUrl WRITE setStatusIconUrl NOTIFY statusIconUrlChanged)
     Q_PROPERTY(DateTime *dateTime READ dateTime WRITE setDateTime NOTIFY dateTimeChanged)
@@ -44,6 +43,7 @@ class Weather : public QObject
     Q_PROPERTY(int currentDay READ currentDay WRITE setCurrentDay NOTIFY currentDayChanged)
     Q_PROPERTY(int currentHourInDay READ currentHourInDay WRITE setCurrentHourInDay NOTIFY currentHourInDayChanged)
     Q_PROPERTY(QStringList weatherIconPaths READ weatherIconPaths WRITE setWeatherIconPaths NOTIFY weatherIconPathsChanged)
+    Q_PROPERTY(double rain READ rain WRITE setRain NOTIFY rainChanged)
     QML_ELEMENT
 
 public:
@@ -87,9 +87,6 @@ public:
     double uvIndex() const;
     void setUvIndex(double newUvIndex);
 
-    int airPressure() const;
-    void setAirPressure(int newAirPressure);
-
     const QString &location() const;
     void setLocation(const QString &newLocation);
 
@@ -111,6 +108,9 @@ public:
     QStringList weatherIconPaths() const;
     void setWeatherIconPaths(const QStringList &newWeatherIconPaths);
 
+    double rain() const;
+    void setRain(double newRain);
+
 signals:
 
     void statusChanged();
@@ -122,8 +122,6 @@ signals:
     void windSpeedChanged();
 
     void uvIndexChanged();
-
-    void airPressureChanged();
 
     void locationChanged();
 
@@ -139,6 +137,8 @@ signals:
 
     void weatherIconPathsChanged();
 
+    void rainChanged();
+
 private:
     TasksLoader* m_tasksLoader;
 
@@ -146,8 +146,10 @@ private:
     double m_temperature;
     double m_humidity;
     double m_windSpeed;
+
     double m_uvIndex;
-    int m_airPressure;
+
+    double m_rain;
 
     int m_currentDay;
 

@@ -10,7 +10,7 @@ Column {
     property double temperature
     property double humidity
     property double windSpeed
-    property int airPressure
+    property double rain
     property int uvIndex
 
     Image {
@@ -49,8 +49,8 @@ Column {
     }
 
     Label {
-        id: airPressureLabel
-        text: "Air Pressure: "  + airPressure + " hPa"
+        id: rainLabel
+        text: "Rain: "  + rain + " mm"
         font.pointSize: 13
         font.weight: Font.Light
     }

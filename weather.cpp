@@ -156,9 +156,12 @@ void Weather::setWeatherInfo(QJsonObject weatherJsonData)
     int weatherCode = weatherJsonData["hourly"].toObject()["weathercode"].toArray()[m_currentHour].toInt();
     double windSpeedkmh = weatherJsonData["hourly"].toObject()["windspeed_10m"].toArray()[m_currentHour].toDouble();
     double uvIndex = weatherJsonData["hourly"].toObject()["uv_index"].toArray()[m_currentHour].toDouble();
+    double rain = weatherJsonData["hourly"].toObject()["rain"].toArray()[m_currentHour].toDouble();
     m_currentTimeIsDay = !!weatherJsonData["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
     setWeatherIconPathsFromEachHour(weatherJsonData);
+
+    qDebug() << QString::fromUtf8(m_apiURL.c_str());
 
     QString weatherStatus = getWeatherStatusFromCode(weatherJsonData);
     QString weatherIconPath = getWeatherIconUrlFromCode(weatherJsonData, 4);
@@ -169,6 +172,7 @@ void Weather::setWeatherInfo(QJsonObject weatherJsonData)
     setUvIndex(uvIndex);
     setStatusIconUrl(weatherIconPath);
     setStatus(weatherStatus);
+    setRain(rain);
 
     tasksLoader()->setTemperature(temperature);
     tasksLoader()->setWeatherStatus(weatherStatus);
@@ -276,19 +280,6 @@ void Weather::setUvIndex(double newUvIndex)
     emit uvIndexChanged();
 }
 
-int Weather::airPressure() const
-{
-    return m_airPressure;
-}
-
-void Weather::setAirPressure(int newAirPressure)
-{
-    if (m_airPressure == newAirPressure)
-        return;
-    m_airPressure = newAirPressure;
-    emit airPressureChanged();
-}
-
 const QString &Weather::location() const
 {
     return m_location;
@@ -378,4 +369,17 @@ void Weather::setWeatherIconPaths(const QStringList &newWeatherIconPaths)
         return;
     m_weatherIconPaths = newWeatherIconPaths;
     emit weatherIconPathsChanged();
+}
+
+double Weather::rain() const
+{
+    return m_rain;
+}
+
+void Weather::setRain(double newRain)
+{
+    if (qFuzzyCompare(m_rain, newRain))
+        return;
+    m_rain = newRain;
+    emit rainChanged();
 }

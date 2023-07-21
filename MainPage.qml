@@ -28,7 +28,6 @@ Item {
     Weather {
         id: weather
         tasksLoader: tasksLoader
-
     }
 
     ColumnLayout {
@@ -61,7 +60,7 @@ Item {
             humidity: weather.humidity
             windSpeed: weather.windSpeed
             uvIndex: weather.uvIndex
-            airPressure: weather.airPressure
+            rain: weather.rain
         }
 
         Label {
