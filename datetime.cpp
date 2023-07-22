@@ -49,3 +49,13 @@ QStringList DateTime::getFollowingDaysInWeek()
     return {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 }
 
+QStringList DateTime::getFollowingDaysInWeekFromToday()
+{
+    QStringList resultList = getFollowingDaysInWeek();
+    QDate currentDate = QDate::currentDate();
+    for (int i = 0; i < currentDate.dayOfWeek()-1; i++) {
+        resultList.insert(6, resultList.takeAt(0));
+    }
+    return resultList;
+}
+

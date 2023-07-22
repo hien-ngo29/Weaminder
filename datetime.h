@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include <iostream>
+#include <QDate>
 #include <QDateTime>
 #include <QDebug>
 #include <QStringList>
@@ -23,6 +24,7 @@ public:
     // "rounded time" means round it to 1(:00)
 
     Q_INVOKABLE QStringList getFollowingDaysInWeek();
+    Q_INVOKABLE QStringList getFollowingDaysInWeekFromToday();
 
 signals:
 
