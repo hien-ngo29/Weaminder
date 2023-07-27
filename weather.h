@@ -166,8 +166,6 @@ private:
 
     DateTime* m_dateTime;
 
-    JsonReader m_jsonReader;
-
     bool m_currentTimeIsDay;
 
     QStringList m_weatherIconPaths;

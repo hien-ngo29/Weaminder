@@ -14,7 +14,7 @@ Weather::Weather(QObject *parent)
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setCityInfo(m_jsonReader.readJsonNetworkReply(reply));
+            setCityInfo(JsonReader::readJsonNetworkReply(reply));
         }
 
         else {
@@ -26,7 +26,7 @@ Weather::Weather(QObject *parent)
     connect(m_weatherNetworkManager, &QNetworkAccessManager::finished,
     this, [=](QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::NoError) {
-            setWeatherInfo(m_jsonReader.readJsonNetworkReply(reply));
+            setWeatherInfo(JsonReader::readJsonNetworkReply(reply));
         }
 
         else {
@@ -83,7 +83,7 @@ void Weather::reloadWeatherFromLocation(QString city)
 
 QString Weather::getWeatherStatusFromCode(QJsonObject weatherJsonObject)
 {
-    QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
+    QJsonObject statusWeatherCode = JsonReader::readJsonFile(":/statusWeatherCode.json");
 
     QString weatherCode = QString::number(weatherJsonObject["hourly"]
                                               .toObject()["weathercode"].toArray()[m_currentHour].toInt());
@@ -96,7 +96,7 @@ QString Weather::getWeatherStatusFromCode(QJsonObject weatherJsonObject)
 
 QString Weather::getWeatherIconUrlFromCode(QJsonObject weatherJsonObject, int scale)
 {
-    QJsonObject statusWeatherCode = m_jsonReader.readJsonFile(":/statusWeatherCode.json");
+    QJsonObject statusWeatherCode = JsonReader::readJsonFile(":/statusWeatherCode.json");
 
     QString weatherCode = QString::number(weatherJsonObject["hourly"]
                                               .toObject()["weathercode"].toArray()[m_currentHour].toInt());

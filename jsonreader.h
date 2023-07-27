@@ -16,9 +16,9 @@ class JsonReader : public QObject
 public:
     explicit JsonReader(QObject *parent = nullptr);
 
-    QJsonObject readJsonNetworkReply(QNetworkReply *reply);
+    static QJsonObject readJsonNetworkReply(QNetworkReply *reply);
 
-    QJsonObject readJsonFile(QString path);
+    static QJsonObject readJsonFile(QString path);
 
 signals:
 
