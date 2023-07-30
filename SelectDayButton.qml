@@ -2,13 +2,14 @@ import QtQuick 2.0
 import QtQuick.Controls 2.15
 
 RoundButton {
-    id: selectDayButton
-
     width: 80; height: 80
 
-    Component.onCompleted: state = "show"
+    state: "showed"
 
-    onClicked: state = "hidden"
+    onClicked: {
+        state = "hidden"
+        weatherDaySelector.state = "showed"
+    }
 
     Image {
         width: 48; height: 48
@@ -18,12 +19,12 @@ RoundButton {
 
     states: [
         State {
-            name: "showed"; when: selectDayButton.clicked
+            name: "showed"; when: true
             PropertyChanges { target: selectDayButton; anchors.rightMargin: 8 }
         },
         State {
-            name: "hidden"; when: 1 == 2
-            PropertyChanges { target: selectDayButton; anchors.rightMargin: -80 }
+            name: "hidden"; when: selectDayButton.clicked
+            PropertyChanges { target: selectDayButton; anchors.rightMargin: -96 }
         }
     ]
 

@@ -79,9 +79,20 @@ Item {
     }
 
     SelectDayButton {
+        id: selectDayButton
+
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 8
+    }
+
+    WeatherDaySelector {
+        id: weatherDaySelector
+
+        anchors.right: parent.right
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -128
     }
 
     EasterEgg {

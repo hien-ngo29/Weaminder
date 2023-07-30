@@ -11,5 +11,7 @@
         <file>EasterEgg.qml</file>
         <file>WeatherTimeSelector.qml</file>
         <file>SelectDayButton.qml</file>
+        <file>WeatherDaySelector.qml</file>
+        <file>WeatherDayWidget.qml</file>
     </qresource>
 </RCC>
