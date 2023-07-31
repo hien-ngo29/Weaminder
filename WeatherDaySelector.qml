@@ -7,6 +7,8 @@ ColumnLayout {
 
     property var dailyWeatherIconUrlList;
 
+    property int currentIndex: 0;
+
     MouseArea {
         id: closeArea
         width: 10; height: 498
@@ -17,8 +19,7 @@ ColumnLayout {
         visible: false
 
         onClicked: {
-            weatherDaySelector.state = "hidden"
-            selectDayButton.state = "showed"
+            setStateToHidden()
         }
 
     }
@@ -43,15 +44,27 @@ ColumnLayout {
         RowLayout {
             anchors.fill: parent
             Repeater {
+                id: weatherDayWidgetsRepeater
                 model: 7
                 property int index;
                 WeatherDayWidget {
                     dayOfWeek: dateTime.getFollowingDaysInWeekFromToday()[index]
                     isCurrentDay: index == 0
                     weatherIconUrl: dailyWeatherIconUrlList[index]
+                    dayIndex: index
                 }
             }
         }
+    }
+
+    function setStateToHidden() {
+        weatherDaySelector.state = "hidden"
+        selectDayButton.state = "showed"
+    }
+
+    function unhighlightAllWeatherDayWidgets() {
+        for (let i = 0; i < 7; i++)
+            weatherDayWidgetsRepeater.itemAt(i).isCurrentDay = false;
     }
 
     states: [

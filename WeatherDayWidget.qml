@@ -8,6 +8,8 @@ Rectangle {
     property bool isCurrentDay;
     property string weatherIconUrl;
 
+    property int dayIndex;
+
     opacity: 0.7
     radius: 18
 
@@ -15,6 +17,7 @@ Rectangle {
     height: 128
 
     Rectangle {
+        id: backgroundHighlighter
         anchors.fill: parent
         color: "#919191"
         visible: isCurrentDay
@@ -32,7 +35,6 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
-
         Label {
             width: 110; height: 50
             text: dayOfWeek
@@ -40,6 +42,19 @@ Rectangle {
             font.bold: true
             font.pointSize: 15
             anchors.horizontalCenter: parent.horizontalCenter
+        }
+    }
+
+    MouseArea {
+        id: selectArea
+        anchors.fill: parent
+
+        onClicked: {
+            weatherDaySelector.setStateToHidden()
+            weather.currentDay = dayIndex
+            weatherDaySelector.unhighlightAllWeatherDayWidgets()
+            isCurrentDay = true
+            weather.reloadWeatherFromLocation(citySelector.currentText)
         }
     }
 
