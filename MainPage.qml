@@ -42,11 +42,13 @@ Item {
             CitySelector {
                 id: citySelector
                 implicitWidth: 220
+                Layout.fillWidth: true
             }
 
             WeatherTimeSelector {
                 id: weatherTimeSelector
                 implicitWidth: 120
+                Layout.fillWidth: true
             }
         }
 
