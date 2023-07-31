@@ -4,6 +4,9 @@ import QtQuick.Layouts 1.15
 
 ColumnLayout {
     id: column
+
+    property var dailyWeatherIconUrlList;
+
     MouseArea {
         id: closeArea
         width: 10; height: 498
@@ -41,7 +44,12 @@ ColumnLayout {
             anchors.fill: parent
             Repeater {
                 model: 7
-                WeatherDayWidget {}
+                property int index;
+                WeatherDayWidget {
+                    dayOfWeek: dateTime.getFollowingDaysInWeekFromToday()[index]
+                    isCurrentDay: index == 0
+                    weatherIconUrl: dailyWeatherIconUrlList[index]
+                }
             }
         }
     }

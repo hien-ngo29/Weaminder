@@ -81,31 +81,40 @@ void Weather::reloadWeatherFromLocation(QString city)
 
 }
 
+QString Weather::convertWeatherCodeToWeatherStatus(QString weatherCode, bool timeIsDay)
+{
+    QJsonObject weatherCodeDict = JsonReader::readJsonFile(":/statusWeatherCode.json");
+
+    return weatherCodeDict[weatherCode]
+        .toObject()[( timeIsDay ? "day" : "night")].toObject()["description"].toString();
+}
+
+QString Weather::convertWeatherCodeToWeatherUrl(QString weatherCode, bool timeIsDay)
+{
+    QJsonObject weatherCodeDict = JsonReader::readJsonFile(":/statusWeatherCode.json");
+
+    return weatherCodeDict[weatherCode]
+        .toObject()[( timeIsDay ? "day" : "night")].toObject()["image"].toString();
+}
+
 QString Weather::getWeatherStatusFromCode(QJsonObject weatherJsonObject)
 {
-    QJsonObject statusWeatherCode = JsonReader::readJsonFile(":/statusWeatherCode.json");
-
     QString weatherCode = QString::number(weatherJsonObject["hourly"]
                                               .toObject()["weathercode"].toArray()[m_currentHour].toInt());
 
     bool timeIsDay = !!weatherJsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
-    return statusWeatherCode[weatherCode]
-        .toObject()[( timeIsDay ? "day" : "night")].toObject()["description"].toString();
+    return convertWeatherCodeToWeatherStatus(weatherCode, timeIsDay);
 }
 
 QString Weather::getWeatherIconUrlFromCode(QJsonObject weatherJsonObject, int scale)
 {
-    QJsonObject statusWeatherCode = JsonReader::readJsonFile(":/statusWeatherCode.json");
-
     QString weatherCode = QString::number(weatherJsonObject["hourly"]
                                               .toObject()["weathercode"].toArray()[m_currentHour].toInt());
 
     bool timeIsDay = !!weatherJsonObject["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
-    return statusWeatherCode[weatherCode]
-        .toObject()[( timeIsDay ? "day" : "night")].
-        toObject()["image"].toString().replace("4x", QString::number(scale) + "x");
+    return convertWeatherCodeToWeatherUrl(weatherCode, timeIsDay);
 }
 
 void Weather::setWeatherIconPathsFromEachHour(QJsonObject weatherJsonObject)
@@ -129,8 +138,24 @@ void Weather::setWeatherIconPathsFromEachHour(QJsonObject weatherJsonObject)
 
 void Weather::getCurrentHourFromCurrentHourInDay()
 {
-   m_currentHour = m_currentHourInDay + m_currentDay * 24;
+    m_currentHour = m_currentHourInDay + m_currentDay * 24;
 
+}
+
+QStringList Weather::getDailyWeatherIconUrlList()
+{
+    QStringList result;
+
+    QString weatherCode;
+    QString weatherUrlList;
+
+    for (int day = 0; day < 7; day++) {
+        weatherCode = QString::number(m_oldWeatherJsonData["daily"].toObject()["weathercode"].toArray()[day].toInt());
+        weatherUrlList = convertWeatherCodeToWeatherUrl(weatherCode, m_currentTimeIsDay);
+        result.append(weatherUrlList);
+    }
+
+    return result;
 }
 
 double Weather::kelvin2Celsius(double kevinTemperature)

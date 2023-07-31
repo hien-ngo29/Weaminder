@@ -55,12 +55,17 @@ public:
 
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
+    QString convertWeatherCodeToWeatherStatus(QString weatherCode, bool timeIsDay);
+    QString convertWeatherCodeToWeatherUrl(QString weatherCode, bool timeIsDay);
+
     QString getWeatherStatusFromCode(QJsonObject weatherJsonObject);
     QString getWeatherIconUrlFromCode(QJsonObject weatherJsonObject, int scale);
 
     void setWeatherIconPathsFromEachHour(QJsonObject weatherJsonObject);
 
     void getCurrentHourFromCurrentHourInDay();
+
+    Q_INVOKABLE QStringList getDailyWeatherIconUrlList();
 
     double kelvin2Celsius(double kevinTemperature);
 
