@@ -5,11 +5,16 @@
 #include <QObject>
 #include <QList>
 
+#include <QNetworkConfigurationManager>
+#include <QNetworkConfiguration>
+
 class Weaminder : public QObject
 {
     Q_OBJECT
 public:
     explicit Weaminder(QObject *parent = nullptr);
+
+    Q_INVOKABLE bool isWifiOn();
 
 signals:
 

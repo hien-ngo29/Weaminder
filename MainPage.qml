@@ -101,4 +101,10 @@ Item {
     EasterEgg {
         anchors.fill: parent
     }
+
+    WifiOffNotification {
+        id: wifiOffNotification
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+    }
 }
