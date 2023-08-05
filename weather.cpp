@@ -3,6 +3,13 @@
 Weather::Weather(QObject *parent)
     : QObject{parent}
 {
+    m_status = "Loading info...";
+    m_temperature = 0;
+    m_humidity = 0;
+    m_rain = 0;
+    m_windSpeed = 0;
+    m_uvIndex = 0;
+
     m_currentDay = 0; // 0 is current day, 1 is tomorrow,...
     m_currentHourInDay = dateTime()->getCurrentRoundedTime().split(":")[0].toInt();
 
