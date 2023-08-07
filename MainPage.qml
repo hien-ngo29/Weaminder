@@ -22,7 +22,7 @@ Item {
         onTemperatureChanged: {
             taskListView.reloadTasks()
             weatherTimeSelector.addTimeToList()
-            weatherDaySelector.dailyWeatherIconUrlList = weather.getDailyWeatherIconUrlList()
+            weatherDaySelector.dailyWeatherIconUrlList = weather.getDailyWeatherIconUrlsListFromJsonData()
         }
     }
 

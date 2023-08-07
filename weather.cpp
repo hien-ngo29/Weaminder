@@ -3,13 +3,6 @@
 Weather::Weather(QObject *parent)
     : QObject{parent}
 {
-    m_status = "Loading info...";
-    m_temperature = 0;
-    m_humidity = 0;
-    m_rain = 0;
-    m_windSpeed = 0;
-    m_uvIndex = 0;
-
     m_currentDay = 0; // 0 is current day, 1 is tomorrow,...
     m_currentHourInDay = dateTime()->getCurrentRoundedTime().split(":")[0].toInt();
 
@@ -43,6 +36,18 @@ Weather::Weather(QObject *parent)
     });
 }
 
+void Weather::returnToLoadingState()
+{   
+    setStatusIconUrl("");
+    setWeatherIconPaths({"", "", "", "", "", "", ""});
+    setStatus("Loading info...");
+    setTemperature(0);
+    setHumidity(0);
+    setRain(0);
+    setWindSpeed(0);
+    setUvIndex(0);
+}
+
 void Weather::sendHttpRequest(QNetworkAccessManager *networkManager, QUrl url)
 {
     m_networkRequest.setUrl(url);
@@ -72,6 +77,8 @@ QString Weather::reformatCityToUrlCity(QString city)
 
 void Weather::reloadWeatherFromLocation(QString city)
 {
+    returnToLoadingState();
+
     city = reformatCityToUrlCity(city);
     getCurrentHourFromCurrentHourInDay();
 
@@ -149,7 +156,7 @@ void Weather::getCurrentHourFromCurrentHourInDay()
 
 }
 
-QStringList Weather::getDailyWeatherIconUrlList()
+QStringList Weather::getDailyWeatherIconUrlsListFromJsonData()
 {
     QStringList result;
 
@@ -192,8 +199,6 @@ void Weather::setWeatherInfo(QJsonObject weatherJsonData)
     m_currentTimeIsDay = !!weatherJsonData["hourly"].toObject()["is_day"].toArray()[m_currentHour].toInt();
 
     setWeatherIconPathsFromEachHour(weatherJsonData);
-
-    qDebug() << QString::fromUtf8(m_apiURL.c_str());
 
     QString weatherStatus = getWeatherStatusFromCode(weatherJsonData);
     QString weatherIconPath = getWeatherIconUrlFromCode(weatherJsonData, 4);

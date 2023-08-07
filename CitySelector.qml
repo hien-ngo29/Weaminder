@@ -39,6 +39,7 @@ ComboBox {
 
     onCurrentIndexChanged: {
         wifiOffNotification.checkWifi()
+//        weather.returnToLoadingState()
         weather.reloadWeatherFromLocation(model[currentIndex])
         taskListView.reloadTasks()
     }

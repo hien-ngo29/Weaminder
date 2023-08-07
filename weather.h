@@ -49,6 +49,8 @@ class Weather : public QObject
 public:
     explicit Weather(QObject *parent = nullptr);
 
+    Q_INVOKABLE void returnToLoadingState(); // Set all the weather properties to 0 and weather status to "Loading..."
+
     void sendHttpRequest(QNetworkAccessManager* networkManager, QUrl url);
 
     QString reformatCityToUrlCity(QString city);
@@ -65,7 +67,7 @@ public:
 
     void getCurrentHourFromCurrentHourInDay();
 
-    Q_INVOKABLE QStringList getDailyWeatherIconUrlList();
+    Q_INVOKABLE QStringList getDailyWeatherIconUrlsListFromJsonData();
 
     double kelvin2Celsius(double kevinTemperature);
 
