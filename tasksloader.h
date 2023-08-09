@@ -43,7 +43,6 @@ signals:
 
 private:
     QList<QString> m_tasksList;
-
     int m_temperature;
     QString m_weatherStatus;
 };

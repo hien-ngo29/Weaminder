@@ -53,7 +53,8 @@ public:
 
     void sendHttpRequest(QNetworkAccessManager* networkManager, QUrl url);
 
-    QString reformatCityToUrlCity(QString city);
+    static QString reformatCityToUrlCity(QString city);
+    static double kelvin2Celsius(double kevinTemperature);
 
     Q_INVOKABLE void reloadWeatherFromLocation(QString city);
 
@@ -68,8 +69,6 @@ public:
     void getCurrentHourFromCurrentHourInDay();
 
     Q_INVOKABLE QStringList getDailyWeatherIconUrlsListFromJsonData();
-
-    double kelvin2Celsius(double kevinTemperature);
 
     template <typename T>
     std::string number2StdString(T number);
