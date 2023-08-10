@@ -216,6 +216,8 @@ void Weather::setWeatherInfo(QJsonObject weatherJsonData)
     tasksLoader()->setTasksList(tasksLoader()->getSuitableTasksWithWeather());
 
     reformatStatusText();
+
+    emit weatherPropertiesChanged();
 }
 
 void Weather::setCityInfo(QJsonObject cityJsonData)

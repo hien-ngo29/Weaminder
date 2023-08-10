@@ -19,16 +19,17 @@ Item {
     TasksLoader {
         id: tasksLoader
 
-        onTemperatureChanged: {
-            taskListView.reloadTasks()
-            weatherTimeSelector.addTimeToList()
-            weatherDaySelector.dailyWeatherIconUrlList = weather.getDailyWeatherIconUrlsListFromJsonData()
-        }
     }
 
     Weather {
         id: weather
         tasksLoader: tasksLoader
+
+        onWeatherPropertiesChanged: {
+            taskListView.reloadTasks()
+            weatherTimeSelector.addTimeToList()
+            weatherDaySelector.dailyWeatherIconUrlList = weather.getDailyWeatherIconUrlsListFromJsonData()
+        }
     }
 
     ColumnLayout {

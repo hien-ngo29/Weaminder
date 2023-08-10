@@ -145,6 +145,8 @@ signals:
 
     void rainChanged();
 
+    void weatherPropertiesChanged();
+
 private:
     TasksLoader* m_tasksLoader;
 
