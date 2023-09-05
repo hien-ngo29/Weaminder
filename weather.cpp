@@ -247,7 +247,7 @@ void Weather::reformatStatusText()
     resultStringStatus[0] = resultStringStatus[0].toUpper();
     for (int i = 0; i < status().length(); i++)
     {
-        if (status()[i] == " ") {
+        if (status()[i] == ' ') {
             resultStringStatus[i+1] = resultStringStatus[i+1].toUpper();
         }
     }
