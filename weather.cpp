@@ -9,6 +9,8 @@ Weather::Weather(QObject *parent)
     m_cityCoordNetworkManager = new QNetworkAccessManager();
     m_weatherNetworkManager = new QNetworkAccessManager();
 
+    m_tasksLoader = new TasksLoader();
+
     reloadWeatherFromLocation("Houston");
 
     connect(m_cityCoordNetworkManager, &QNetworkAccessManager::finished,
