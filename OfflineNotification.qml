@@ -41,11 +41,11 @@ Rectangle {
     states: [
         State {
             name: "showed";
-            PropertyChanges { target: wifiOffNotification; anchors.topMargin: 9 }
+            PropertyChanges { target: offlineNotification; anchors.topMargin: 9 }
         },
         State {
             name: "hidden";
-            PropertyChanges { target: wifiOffNotification; anchors.topMargin: -50 }
+            PropertyChanges { target: offlineNotification; anchors.topMargin: -50 }
         }
     ]
 

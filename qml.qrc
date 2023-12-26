@@ -13,6 +13,6 @@
         <file>SelectDayButton.qml</file>
         <file>WeatherDaySelector.qml</file>
         <file>WeatherDayWidget.qml</file>
-        <file>WifiOffNotification.qml</file>
+        <file>OfflineNotification.qml</file>
     </qresource>
 </RCC>

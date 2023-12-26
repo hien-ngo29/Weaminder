@@ -57,14 +57,6 @@ Item {
             id: weatherInfoWidget
 
             Layout.fillWidth: true
-
-            weatherStatus: weather.status
-            weatherStatusIconPath: weather.statusIconUrl
-            temperature: weather.temperature
-            humidity: weather.humidity
-            windSpeed: weather.windSpeed
-            uvIndex: weather.uvIndex
-            rain: weather.rain
         }
 
         Label {
@@ -103,8 +95,8 @@ Item {
         anchors.fill: parent
     }
 
-    WifiOffNotification {
-        id: wifiOffNotification
+    OfflineNotification {
+        id: offlineNotification
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
     }

@@ -38,8 +38,7 @@ ComboBox {
     currentIndex: 7 // Houston, USA
 
     onCurrentIndexChanged: {
-        wifiOffNotification.checkWifi()
-//        weather.returnToLoadingState()
+        offlineNotification.checkWifi()
         weather.reloadWeatherFromLocation(model[currentIndex])
         taskListView.reloadTasks()
     }
