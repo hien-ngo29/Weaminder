@@ -6,7 +6,7 @@ Weaminder::Weaminder(QObject *parent)
 
 }
 
-bool Weaminder::isWifiOn()
+bool Weaminder::isConnectionOn()
 {
     QNetworkConfigurationManager manager;
 

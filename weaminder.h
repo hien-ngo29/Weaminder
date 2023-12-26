@@ -14,7 +14,7 @@ class Weaminder : public QObject
 public:
     explicit Weaminder(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool isWifiOn();
+    Q_INVOKABLE bool isConnectionOn();
 
 signals:
 

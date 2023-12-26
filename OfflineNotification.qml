@@ -9,14 +9,14 @@ Rectangle {
 
     state: "hidden"
 
-    Component.onCompleted: checkWifi()
+    Component.onCompleted: checkConnection()
 
     Row {
         anchors.centerIn: parent
         spacing: 10
         Image {
             width: 32; height: 32
-            source: "icons/wifi-off.png"
+            source: "icons/connection-off.png"
         }
 
         Label {
@@ -58,7 +58,7 @@ Rectangle {
         closeTimer.running = true
     }
 
-    function checkWifi() {
-        if (!weaminder.isWifiOn()) showNotification()
+    function checkConnection() {
+        if (!weaminder.isConnectionOn()) showNotification()
     }
 }

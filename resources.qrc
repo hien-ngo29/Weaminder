@@ -3,6 +3,6 @@
         <file>qtquickcontrols2.conf</file>
         <file>statusWeatherCode.json</file>
         <file>icons/timetable.png</file>
-        <file>icons/wifi-off.png</file>
+        <file>icons/connection-off.png</file>
     </qresource>
 </RCC>
